@@ -26,6 +26,7 @@ freertos/freertos_kernel/portable/GCC/ARM_CM4F \
 freertos/freertos_kernel/portable/MemMang \
 ledModule \
 main \
+samplingModule \
 startup \
 utilities \
 xip \

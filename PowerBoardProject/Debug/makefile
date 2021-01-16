@@ -11,6 +11,7 @@ RM := rm -rf
 -include xip/subdir.mk
 -include utilities/subdir.mk
 -include startup/subdir.mk
+-include samplingModule/subdir.mk
 -include main/subdir.mk
 -include ledModule/subdir.mk
 -include freertos/freertos_kernel/portable/MemMang/subdir.mk
