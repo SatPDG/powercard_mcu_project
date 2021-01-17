@@ -165,6 +165,8 @@ void UART1Driver_TXTask()
 			LPUART_EnableInterrupts(LPUART1,
 					kLPUART_TxDataRegEmptyInterruptEnable);
 			xTaskResumeAll();
+
+			vPortFree(message.data);
 		}
 	}
 }
