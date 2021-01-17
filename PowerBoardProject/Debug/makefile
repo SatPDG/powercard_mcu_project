@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include xip/subdir.mk
 -include utilities/subdir.mk
+-include util/subdir.mk
 -include startup/subdir.mk
 -include samplingModule/subdir.mk
 -include main/subdir.mk
@@ -23,6 +24,7 @@ RM := rm -rf
 -include component/serial_manager/subdir.mk
 -include component/osa/subdir.mk
 -include component/lists/subdir.mk
+-include communicationModule/subdir.mk
 -include board/subdir.mk
 -include subdir.mk
 -include objects.mk

@@ -25,7 +25,8 @@ main/main.o main/main.d: ../main/main.c \
  D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\drivers/fsl_gpio.h \
  D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\board/pin_mux.h \
  D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\ledModule/ledModule.h \
- D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\samplingModule/adcDriver.h
+ D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\samplingModule/adcDriver.h \
+ D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\samplingModule/samplingModule.h
 
 D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\freertos\freertos_kernel\include/FreeRTOS.h:
 
@@ -80,3 +81,5 @@ D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\board/pin_mux.h:
 D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\ledModule/ledModule.h:
 
 D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\samplingModule/adcDriver.h:
+
+D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\samplingModule/samplingModule.h:

@@ -23,8 +23,7 @@ component/serial_manager/serial_manager.o \
  D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\freertos\freertos_kernel\include/deprecated_definitions.h \
  D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\freertos\freertos_kernel\portable\GCC\ARM_CM4F/portmacro.h \
  D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\freertos\freertos_kernel\include/mpu_wrappers.h \
- ../component/serial_manager/serial_port_internal.h \
- D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\component\lists/generic_list.h
+ ../component/serial_manager/serial_port_internal.h
 
 D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\drivers/fsl_common.h:
 
@@ -71,5 +70,3 @@ D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\freertos\freerto
 D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\freertos\freertos_kernel\include/mpu_wrappers.h:
 
 ../component/serial_manager/serial_port_internal.h:
-
-D:\Fichier\DesignIV\MCU\powercard_mcu_project\PowerBoardProject\component\lists/generic_list.h:

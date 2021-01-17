@@ -1,12 +1,6 @@
-fsl_common.h:552:28:DisableGlobalIRQ	16	static
-fsl_common.h:583:24:EnableGlobalIRQ	24	static
-serial_port_uart.c:68:13:Serial_UartCallback	40	static
 serial_port_uart.c:128:25:Serial_UartInit	40	static
 serial_port_uart.c:196:25:Serial_UartDeinit	24	static
-serial_port_uart.c:223:25:Serial_UartWrite	32	static
-serial_port_uart.c:294:25:Serial_UartCancelWrite	40	static
-serial_port_uart.c:327:25:Serial_UartInstallTxCallback	32	static
-serial_port_uart.c:343:25:Serial_UartInstallRxCallback	32	static
-serial_port_uart.c:359:6:Serial_UartIsrFunction	24	static
+serial_port_uart.c:263:25:Serial_UartWrite	32	static
+serial_port_uart.c:277:25:Serial_UartRead	32	static
 serial_port_uart.c:371:25:Serial_UartEnterLowpower	24	static
 serial_port_uart.c:387:25:Serial_UartExitLowpower	24	static

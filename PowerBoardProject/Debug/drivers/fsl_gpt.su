@@ -1,0 +1,10 @@
+fsl_clock.h:957:20:CLOCK_ControlGate	32	static
+fsl_clock.h:974:20:CLOCK_EnableClock	16	static
+fsl_clock.h:984:20:CLOCK_DisableClock	16	static
+fsl_gpt.h:168:20:GPT_SoftwareReset	16	static
+fsl_gpt.h:188:20:GPT_SetClockSource	16	static
+fsl_gpt.h:217:20:GPT_SetClockDivider	16	static
+fsl_gpt.c:34:17:GPT_GetInstance	24	static
+fsl_gpt.c:58:6:GPT_Init	16	static
+fsl_gpt.c:85:6:GPT_Deinit	16	static
+fsl_gpt.c:112:6:GPT_GetDefaultConfig	16	static

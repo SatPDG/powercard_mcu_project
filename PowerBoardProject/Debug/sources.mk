@@ -15,6 +15,7 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 board \
+communicationModule \
 component/lists \
 component/osa \
 component/serial_manager \
@@ -28,6 +29,7 @@ ledModule \
 main \
 samplingModule \
 startup \
+util \
 utilities \
 xip \
 
