@@ -59,7 +59,7 @@ unsigned int CommunicationParser_Parse(unsigned char *data, unsigned int size)
 		case parser_register:
 		{
 			parser.packet.numRegister = byte;
-			if (parser.packet.size == 6)
+			if (parser.packet.size == 4)
 			{
 				parser.state = parser_crc1;
 
@@ -74,12 +74,12 @@ unsigned int CommunicationParser_Parse(unsigned char *data, unsigned int size)
 		{
 			if (parser.packet.data == 0)
 			{
-				parser.packet.data = pvPortMalloc(parser.packet.size - 6);
+				parser.packet.data = pvPortMalloc(parser.packet.size - 4);
 			}
 			parser.packet.data[parser.receivedData] = byte;
 			parser.receivedData++;
 
-			if (parser.receivedData == parser.packet.size - 6)
+			if (parser.receivedData == parser.packet.size - 4)
 			{
 				parser.state = parser_crc1;
 			}

@@ -36,6 +36,8 @@ SemaphoreHandle_t uart1RX_sem;
 // Tx task attributs
 QueueHandle_t uart1TX_queue;
 
+unsigned int timeoutFlag = 0;
+
 void UART1Driver_Init()
 {
 	uart1RX_sem = xSemaphoreCreateBinary();
@@ -54,6 +56,7 @@ void UART1Driver_Init()
 		LPUART_Init(LPUART1, &config, BOARD_DebugConsoleSrcFreq());
 
 		LPUART_EnableInterrupts(LPUART1, kLPUART_RxDataRegFullInterruptEnable);
+		NVIC_SetPriority(LPUART1_IRQn, 2);
 		EnableIRQ(LPUART1_IRQn);
 	}
 
@@ -70,6 +73,7 @@ void UART1Driver_Init()
 		GPT_SetOutputCompareValue(GPT2, kGPT_OutputCompare_Channel1,
 				gptFreq);
 		GPT_EnableInterrupts(GPT2, kGPT_OutputCompare1InterruptEnable);
+		NVIC_SetPriority(GPT2_IRQn, 2);
 		EnableIRQ(GPT2_IRQn);
 	}
 }
@@ -85,8 +89,8 @@ void LPUART1_IRQHandler()
 		uart1RXBuffer[uart1RXIdx] = LPUART_ReadByte(LPUART1);
 		uart1RXIdx = (uart1RXIdx + 1) % UART1_RX_BUF_SIZE;
 
-		long priority;
-		xSemaphoreGiveFromISR(uart1RX_sem, &priority);
+//		long priority;
+//		xSemaphoreGiveFromISR(uart1RX_sem, &priority);
 	}
 	else if (flags & kLPUART_TxDataRegEmptyFlag)
 	{
@@ -108,7 +112,9 @@ void GPT2_IRQHandler()
 	GPT_ClearStatusFlags(GPT2, kGPT_OutputCompare1Flag);
 	GPT_StopTimer(GPT2);
 
-	CommunicationParser_Flush();
+	timeoutFlag = 1;
+	long priority;
+	xSemaphoreGiveFromISR(uart1RX_sem, &priority);
 }
 
 void UART1Driver_RXTask()
@@ -118,6 +124,11 @@ void UART1Driver_RXTask()
 	{
 		if (xSemaphoreTake(uart1RX_sem, portMAX_DELAY) == pdTRUE)
 		{
+			__disable_irq();
+			unsigned int currentTimeout = timeoutFlag;
+			timeoutFlag = 0;
+			__enable_irq();
+
 			unsigned int idx = 0;
 			while (uart1RXLastRead != uart1RXIdx)
 			{
@@ -139,6 +150,8 @@ void UART1Driver_RXTask()
 				xQueueSend(com_queue, &message, 0);
 				CommunicationParser_Flush();
 			}
+			if(currentTimeout)
+				CommunicationParser_Flush();
 		}
 	}
 }
@@ -161,6 +174,7 @@ void UART1Driver_TXTask()
 			}
 
 			LPUART_WriteByte(LPUART1, uart1TXBuffer[uart1TXLastWrite]);
+			uart1TXLastWrite = (uart1TXLastWrite + 1) % UART1_TX_BUF_SIZE;
 
 			LPUART_EnableInterrupts(LPUART1,
 					kLPUART_TxDataRegEmptyInterruptEnable);

@@ -2,6 +2,8 @@
 #include "communicationPacketBuilder.h"
 #include "crc16.h"
 
+unsigned char buff[128];
+
 void CommunicationPacketBuilder_BuildAck(comPacket_t *inPacket,
 		comData_t *responseData, comData_t *outPacket) {
 	unsigned int size = responseData->size + 4;
@@ -9,8 +11,8 @@ void CommunicationPacketBuilder_BuildAck(comPacket_t *inPacket,
 		size += 2;
 	}
 
-	outPacket->data = pvPortMalloc(size + 2);
 	outPacket->size = size + 2;
+	outPacket->data = pvPortMalloc(outPacket->size);
 
 	unsigned char *packet = outPacket->data;
 	packet[0] = COM_START_BYTE;
@@ -22,17 +24,17 @@ void CommunicationPacketBuilder_BuildAck(comPacket_t *inPacket,
 	if(inPacket->numFunction == cf_readList || inPacket->numFunction == cf_writeList){
 		packet[4] = inPacket->data[0];
 		packet[5] = inPacket->data[1];
-		offset = 3;
+		offset = 2;
 	}
 
 	for(unsigned int i = 0; i < responseData->size; i++){
-		packet[3 + offset + i] = responseData->data[i];
+		packet[4 + offset + i] = responseData->data[i];
 	}
 	offset += responseData->size;
 
 	unsigned short crc = CRC16_Compute(packet, size);
-	packet[3 + offset] = ((crc >> 8) & 0xFF);
-	packet[4 + offset] = (crc & 0xFF);
+	packet[4 + offset] = ((crc >> 8) & 0xFF);
+	packet[5 + offset] = (crc & 0xFF);
 }
 
 void CommunicationPacketBuilder_BuildNack(comPacket_t *inPacket,
@@ -55,15 +57,15 @@ void CommunicationPacketBuilder_BuildNack(comPacket_t *inPacket,
 		if(inPacket->numFunction == cf_readList || inPacket->numFunction == cf_writeList){
 			packet[4] = inPacket->data[0];
 			packet[5] = inPacket->data[1];
-			offset = 3;
+			offset = 2;
 		}
 
 		for(unsigned int i = 0; i < responseData->size; i++){
-			packet[3 + offset + i] = responseData->data[i];
+			packet[4 + offset + i] = responseData->data[i];
 		}
 		offset += responseData->size;
 
 		unsigned short crc = CRC16_Compute(packet, size);
-		packet[3 + offset] = ((crc >> 8) & 0xFF);
-		packet[4 + offset] = (crc & 0xFF);
+		packet[4 + offset] = ((crc >> 8) & 0xFF);
+		packet[5 + offset] = (crc & 0xFF);
 }

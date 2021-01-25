@@ -5,7 +5,7 @@ fsl_os_abstraction_free_rtos.c:142:6:OSA_EnterCritical	32	static
 fsl_os_abstraction_free_rtos.c:158:6:OSA_ExitCritical	24	static
 fsl_os_abstraction_free_rtos.c:180:6:startup_task	16	static
 fsl_os_abstraction_free_rtos.c:330:6:OSA_TimeDelay	16	static
-fsl_os_abstraction_free_rtos.c:340:10:OSA_TimeGetMsec	24	static
+fsl_os_abstraction_free_rtos.c:340:10:OSA_TimeGetMsec	32	static
 fsl_os_abstraction_free_rtos.c:362:14:OSA_SemaphoreCreate	24	static
 fsl_os_abstraction_free_rtos.c:389:14:OSA_SemaphoreDestroy	24	static
 fsl_os_abstraction_free_rtos.c:411:14:OSA_SemaphoreWait	24	static

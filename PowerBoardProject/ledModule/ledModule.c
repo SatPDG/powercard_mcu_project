@@ -13,6 +13,10 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+
+#include "communicationProtocol.h"
+#include "uart1Driver.h"
 
 #ifdef EVK_1020
 #define LED_PORT IOMUXC_GPIO_AD_B0_05_GPIO1_IO05
@@ -47,5 +51,18 @@ void LedModule_Task() {
 			GPIO_PinWrite(LED_GPIO, LED_GPIO_PIN, 1);
 			ledStatus = 0;
 		}
+
+//		unsigned char *ptr = pvPortMalloc(5);
+//		ptr[0] = 0xAA;
+//		ptr[1] = 0xAA;
+//		ptr[2] = 0xAA;
+//		ptr[3] = 0xAA;
+//		ptr[4] = 0xAA;
+//
+//		comData_t data;
+//		data.data = ptr;
+//		data.size = 5;
+//
+//		xQueueSend(uart1TX_queue, &data, 0);
 	}
 }

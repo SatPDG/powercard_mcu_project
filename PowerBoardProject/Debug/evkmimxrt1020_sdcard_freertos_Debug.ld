@@ -6,7 +6,7 @@
  * Generated linker script file for MIMXRT1021xxxxx
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.23
- * MCUXpresso IDE v11.2.1 [Build 4149] [2020-10-07] on 17-Jan-2021 1:36:39 PM
+ * MCUXpresso IDE v11.1.1 [Build 3241] [2020-03-02] on Jan 25, 2021 11:19:47 AM
  */
 
 INCLUDE "evkmimxrt1020_sdcard_freertos_Debug_library.ld"
@@ -80,7 +80,6 @@ SECTIONS
     .text : ALIGN(4)
     {
        *(.text*)
-       KEEP(*freertos*/tasks.o(.rodata*)) /* FreeRTOS Debug Config */
        *(.rodata .rodata.* .constdata .constdata.*)
        . = ALIGN(4);
     } > BOARD_FLASH

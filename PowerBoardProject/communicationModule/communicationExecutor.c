@@ -10,6 +10,8 @@
 #include "communicationProtocol.h"
 
 #include "FreeRTOS.h"
+#include "queue.h"
+#include "uart1Driver.h"
 
 unsigned int CommunicationExecutor_ExecuteReadAccess(comRegister_t *regPtr,
 		unsigned char offset, unsigned char count, comData_t *responseData);
@@ -29,14 +31,12 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 	unsigned int result = 0x1;
 
 	responseData->size = 0;
-	responseData->data = 0;
 
 	// Validate function number
-	if (function != cf_read || function != cf_write || function != cf_readList
-			|| function != cf_writeList)
+	if (function != cf_read && function != cf_write && function != cf_readList
+			&& function != cf_writeList)
 	{
 		result = 0x0;
-		responseData->data = pvPortMalloc(sizeof(char));
 		responseData->data[0] = (unsigned char) comerr_badFunction;
 		responseData->size = 1;
 		return result;
@@ -68,7 +68,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 				else
 				{
 					result = 0x0;
-					responseData->data = pvPortMalloc(sizeof(char));
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
 					responseData->size = 1;
@@ -78,7 +77,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			else
 			{
 				result = 0x0;
-				responseData->data = pvPortMalloc(sizeof(char));
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
 				responseData->size = 1;
 				return result;
@@ -97,7 +95,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 				else
 				{
 					result = 0x0;
-					responseData->data = pvPortMalloc(sizeof(char));
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
 					responseData->size = 1;
@@ -107,7 +104,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			else
 			{
 				result = 0x0;
-				responseData->data = pvPortMalloc(sizeof(char));
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
 				responseData->size = 1;
 				return result;
@@ -130,7 +126,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 				else
 				{
 					result = 0x0;
-					responseData->data = pvPortMalloc(sizeof(char));
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
 					responseData->size = 1;
@@ -140,7 +135,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			else
 			{
 				result = 0x0;
-				responseData->data = pvPortMalloc(sizeof(char));
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
 				responseData->size = 1;
 				return result;
@@ -164,7 +158,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 				else
 				{
 					result = 0x0;
-					responseData->data = pvPortMalloc(sizeof(char));
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
 					responseData->size = 1;
@@ -174,7 +167,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			else
 			{
 				result = 0x0;
-				responseData->data = pvPortMalloc(sizeof(char));
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
 				responseData->size = 1;
 				return result;
@@ -185,7 +177,6 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 	{
 		result = 0x0;
 
-		responseData->data = pvPortMalloc(sizeof(char));
 		responseData->data[0] = (unsigned char) comerr_regNotFound;
 		responseData->size = 1;
 		return result;
@@ -204,7 +195,6 @@ unsigned int CommunicationExecutor_ExecuteReadAccess(comRegister_t *regPtr,
 		unsigned int buffer[256];
 		if (regPtr->ReadFunction(offset, count, (unsigned char*) buffer, size))
 		{
-			responseData->data = pvPortMalloc(size);
 			for (unsigned int i = 0; i < size; i++)
 			{
 				responseData->data[i] = buffer[i];
@@ -219,13 +209,14 @@ unsigned int CommunicationExecutor_ExecuteReadAccess(comRegister_t *regPtr,
 	}
 	else if (regPtr->dataPtr != 0)
 	{ // Check ram ptr
-		responseData->data = pvPortMalloc(count * sizeof(unsigned int));
 		responseData->size = count * sizeof(unsigned int);
+
 		for (unsigned int i = 0; i < responseData->size; i++)
 		{
-			responseData->data[i] = regPtr->dataPtr[offset
-					* sizeof(unsigned int) + i];
+			responseData->data[i] = regPtr->dataPtr[(offset
+					* sizeof(unsigned int)) + i];
 		}
+
 		return 0x1;
 	}
 	return 0x0;
@@ -247,7 +238,7 @@ unsigned int CommunicationExecutor_ExecuteWriteAccess(comRegister_t *regPtr,
 	{
 		for (unsigned int i = 0; i < count * sizeof(unsigned int); i++)
 		{
-			regPtr->dataPtr[offset + sizeof(unsigned int) + 1] = data[i];
+			regPtr->dataPtr[(offset * sizeof(unsigned int)) + i] = data[i];
 		}
 		return 0x1;
 	}

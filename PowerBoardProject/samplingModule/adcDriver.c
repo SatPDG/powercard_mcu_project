@@ -94,8 +94,9 @@ void ADCDriver_Init()
 		ADC_ETC_SetTriggerChainConfig(ADC_ETC, 0U, 2U,
 				&adcEtcTriggerChainConfig);
 
+		NVIC_SetPriority(ADC_ETC_IRQ0_IRQn, 2);
 		NVIC_EnableIRQ(ADC_ETC_IRQ0_IRQn);
-		NVIC_EnableIRQ(ADC_ETC_IRQ1_IRQn);
+		//NVIC_EnableIRQ(ADC_ETC_IRQ1_IRQn);
 	}
 
 	// Pin init

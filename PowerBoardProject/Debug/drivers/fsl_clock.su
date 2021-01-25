@@ -25,7 +25,7 @@ fsl_clock.c:537:6:CLOCK_InitAudioPll	24	static
 fsl_clock.c:612:6:CLOCK_DeinitAudioPll	4	static
 fsl_clock.c:624:6:CLOCK_InitEnetPll	24	static
 fsl_clock.c:664:6:CLOCK_DeinitEnetPll	4	static
-fsl_clock.c:677:10:CLOCK_GetPllFreq	56	static
+fsl_clock.c:677:10:CLOCK_GetPllFreq	64	static
 fsl_clock.c:828:6:CLOCK_InitSysPfd	24	static
 fsl_clock.c:851:6:CLOCK_DeinitSysPfd	16	static
 fsl_clock.c:866:6:CLOCK_InitUsb1Pfd	24	static

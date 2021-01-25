@@ -10,18 +10,25 @@
 #include "communicationPacketBuilder.h"
 #include "communicationProtocol.h"
 
+#include "uart1Driver.h"
+
+QueueHandle_t com_queue;
+unsigned char comBuffer[256];
+
 void Communication_Task() {
 	com_queue = xQueueCreate(2, sizeof(serialRxPacket_t));
 	serialRxPacket_t message;
+
 	while (1) {
 		if (xQueueReceive(com_queue, &message, portMAX_DELAY) == pdTRUE) {
 			// Execute command
 			comData_t responseData;
 			responseData.size = 0;
-			responseData.data = 0;
+			responseData.data = comBuffer;
+
 			unsigned int result = CommunicationExecutor_Execute(
 					message.packet.numFunction, message.packet.numRegister,
-					message.packet.data, message.packet.size - 2,
+					message.packet.data, message.packet.size - 4,
 					&responseData);
 
 			if (result) {
@@ -31,7 +38,8 @@ void Communication_Task() {
 				// Send ack packet
 				CommunicationPacketBuilder_BuildAck(&message.packet,
 						&responseData, &outPacket);
-				xQueueSend(message.txQueue, &outPacket, 5);
+
+				xQueueSend(message.txQueue, &outPacket, 0);
 			} else {
 				// Send nack packet
 				comData_t outPacket;
@@ -40,12 +48,9 @@ void Communication_Task() {
 				// Send ack packet
 				CommunicationPacketBuilder_BuildNack(&message.packet,
 						&responseData, &outPacket);
-				xQueueSend(message.txQueue, &outPacket, 5);
+				xQueueSend(message.txQueue, &outPacket, 0);
 			}
 
-			if(responseData.data){
-				vPortFree(responseData.data);
-			}
 			if(message.packet.data){
 				vPortFree(message.packet.data);
 			}
