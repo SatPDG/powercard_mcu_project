@@ -1,0 +1,1 @@
+*(EXCLUDE_FILE(*flashDriver.o *flashDriverOps.o *fsl_flexspi.o) .text*)

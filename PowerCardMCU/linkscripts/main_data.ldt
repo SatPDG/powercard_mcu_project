@@ -1,0 +1,8 @@
+*flashDriver.o(.text*)
+*flashDriver.o(.rodata .rodata.* .constdata .constdata.*)
+*flashDriverOps.o(.text*)
+*flashDriverOps.o(.rodata .rodata.* .constdata .constdata.*)
+*fsl_flexspi.o(.text*)
+*fsl_flexspi.o(.rodata .rodata.* .constdata .constdata.*)
+. = ALIGN(${text_align});
+*(.data*)

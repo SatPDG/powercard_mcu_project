@@ -1,5 +1,0 @@
-sdcard_freertos.c:106:13:SDCARD_DetectCallBack	16	static
-sdcard_freertos.c:112:13:CardDetectTask	16	static
-sdcard_freertos.c:173:13:AccessCardTask	32	static
-sdcard_freertos.c:218:5:main	16	static
-sdcard_freertos.c:248:17:SDCARD_ReadWrite	16	static

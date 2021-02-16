@@ -1,0 +1,23 @@
+/*
+ * flashMemoryMap.h
+ *
+ *  Created on: Feb 1, 2021
+ *      Author: RMDS
+ */
+
+#ifndef FLASHMEMORYMAP_H_
+#define FLASHMEMORYMAP_H_
+
+#define FLASH_SECTOR_SIZE 0x1000
+#define FLASH_PAGE_SIZE 256
+
+#define FLASH_BASE_ADDRESS 0x60000000
+
+#define FLASH_PARAMETERS_A_ADDRESS 0x60090000
+#define FLASH_PARAMETERS_A_SIZE (4*1024)
+
+#define FLASH_PARAMETERS_B_ADDRESS 0x60113000
+#define FLASH_PARAMETERS_B_SIZE (4*1024)
+
+
+#endif /* FLASHMEMORYMAP_H_ */

@@ -1,0 +1,5 @@
+*(EXCLUDE_FILE(*flashDriver.o *flashDriverOps.o *fsl_flexspi.o) .rodata)
+*(EXCLUDE_FILE(*flashDriver.o *flashDriverOps.o *fsl_flexspi.o) .rodata.*)
+*(EXCLUDE_FILE(*flashDriver.o *flashDriverOps.o *fsl_flexspi.o) .constdata)
+*(EXCLUDE_FILE(*flashDriver.o *flashDriverOps.o *fsl_flexspi.o) .constdata.*)
+. = ALIGN(${text_align});
