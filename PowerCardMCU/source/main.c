@@ -19,6 +19,10 @@
 #include "communicationModule.h"
 
 #include "flashDriver.h"
+#include "parameterSystem.h"
+
+#include "interrupterModule.h"
+#include "protectionModule.h"
 
 void main() {
 	BOARD_ConfigMPU();
@@ -33,6 +37,15 @@ void main() {
 
 	//Init flash
 	FlashDriver_Init();
+
+	// Load the param from FLASH. Must be call once the flash is initialize.
+	ParameterSystem_Init();
+
+	// Init the interrupter
+	InterrupterModule_Init();
+
+	// Init the protection
+	ProtectionModule_Init();
 
 	if (xTaskCreate(LedModule_Task, "LedTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 3, NULL) != pdTRUE) {
 		while (1);
@@ -50,9 +63,12 @@ void main() {
 		while (1);
 	}
 
-
 	if (xTaskCreate(SamplingModule_Task, "SamplingTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
 		while (1);
+	}
+
+	if (xTaskCreate(ProtectionModule_Task, "ProtectionTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
+			while (1);
 	}
 
 	ADCDriver_StartSampling();

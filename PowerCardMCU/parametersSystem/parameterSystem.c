@@ -57,7 +57,7 @@ void ParameterSystem_Load()
 
 	// Check system B validity
 	FlashDriver_ReadBytes(FLASH_PARAMETERS_B_ADDRESS, flashBuffer, 4096);
-	unsigned int paramAIsValid = ParameterSystem_IsValidSystem(flashBuffer);
+	unsigned int paramBIsValid = ParameterSystem_IsValidSystem(flashBuffer);
 
 	if(!paramAIsValid && !paramBIsValid)
 	{
@@ -101,12 +101,12 @@ void ParameterSystem_Load()
 	// Load param in flash
 	FlashDriver_ReadBytes(FLASH_PARAMETERS_A_ADDRESS, flashBuffer, 4096);
 	flashHeader *header = (flashHeader*) flashBuffer;
-	flashParamEntry entryList[] = flashBuffer + sizeof(flashHeader);
+	flashParamEntry *entryList = (flashParamEntry*) flashBuffer + sizeof(flashHeader);
 
 	for(unsigned int i = 0; i < paramEntryListSize && i < header->entryCount; i++)
 	{
-		flashParamEntry flashEntry = entryList[i];
-		paramEntry param = paramEntryList[i];
+		flashParamEntry *flashEntry = &entryList[i];
+		const paramEntry *param = &paramEntryList[i];
 
 		if(param->ramPtr != 0){
 			// Copy param value in param
@@ -119,7 +119,7 @@ void ParameterSystem_ResetToDefault()
 {
 	for(unsigned int i = 0; i < paramEntryListSize; i++)
 	{
-		paramEntry param = paramEntryList[i];
+		const paramEntry *param = &paramEntryList[i];
 		if(param->ramPtr != 0 && param->defaultPtr != 0)
 		{
 			memcpy(param->ramPtr, param->defaultPtr, param->size);
@@ -135,14 +135,14 @@ void ParameterSystem_CommitToFlash()
 	FlashDriver_ReadBytes(FLASH_PARAMETERS_A_ADDRESS, flashBuffer, 4096);
 
 	flashHeader *header = (flashHeader*) flashBuffer;
-	flashParamEntry entryList[] = flashBuffer + sizeof(flashHeader);
+	flashParamEntry *entryList = (flashParamEntry*) flashBuffer + sizeof(flashHeader);
 
 	// Copy the param val in the flash buffer.
 	for(unsigned int i = 0; i < paramEntryListSize; i++)
 	{
 		if(paramEntryList[i].ramPtr != 0)
 		{
-			memcpy(entryList[i].val, paramEntryList[i].ramPtr, paramEntryList.size);
+			memcpy(entryList[i].val, paramEntryList[i].ramPtr, paramEntryList[i].size);
 		}
 	}
 

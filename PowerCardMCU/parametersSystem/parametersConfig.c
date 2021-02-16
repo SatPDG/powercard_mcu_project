@@ -7,7 +7,7 @@
 
 #include "parametersConfig.h"
 
-const paramEntry *paramEntryList =
+const paramEntry paramEntryList[] =
 		{
 				{0x0, 0x0, 0},
 		};
