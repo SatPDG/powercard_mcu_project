@@ -15,6 +15,7 @@ RM := rm -rf
 -include samplingModule/subdir.mk
 -include main/subdir.mk
 -include ledModule/subdir.mk
+-include interrupterModule/subdir.mk
 -include freertos/freertos_kernel/portable/MemMang/subdir.mk
 -include freertos/freertos_kernel/portable/GCC/ARM_CM4F/subdir.mk
 -include freertos/freertos_kernel/subdir.mk

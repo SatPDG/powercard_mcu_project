@@ -25,6 +25,7 @@ drivers \
 freertos/freertos_kernel \
 freertos/freertos_kernel/portable/GCC/ARM_CM4F \
 freertos/freertos_kernel/portable/MemMang \
+interrupterModule \
 ledModule \
 main \
 samplingModule \
