@@ -31,10 +31,10 @@ typedef struct
 
 extern comParser_t parser;
 
-void CommunicationParser_Init();
+void CommunicationParser_Init(comParser_t *parser);
 
-unsigned int CommunicationParser_Parse(unsigned char *data, unsigned int size);
+unsigned int CommunicationParser_Parse(comParser_t *parser, unsigned char *data, unsigned int size);
 
-void CommunicationParser_Flush();
+void CommunicationParser_Flush(comParser_t *parser);
 
 #endif /* COMMUNICATIONPARSER_H_ */

@@ -8,8 +8,8 @@
 #ifndef PROTECTIONMODULE_H_
 #define PROTECTIONMODULE_H_
 
-extern unsigned char protectionStateList[256];
-extern unsigned char protectionOverCurrentList[256];
+extern unsigned int protectionStateList[256];
+extern unsigned int protectionOverCurrentList[256];
 
 void ProtectionModule_Init();
 

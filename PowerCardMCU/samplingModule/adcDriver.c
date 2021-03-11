@@ -20,7 +20,7 @@ void ADCDriver_Init()
 		pit_config_t pitConfig;
 		PIT_GetDefaultConfig(&pitConfig);
 		PIT_Init(PIT, &pitConfig);
-		PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, (24000000 / 40) - 1);
+		PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, (24000000 / 100) - 1);
 		//PIT_EnableInterrupts(PIT, 0, kPIT_TimerInterruptEnable);
 
 		//NVIC_EnableIRQ(PIT_IRQn);

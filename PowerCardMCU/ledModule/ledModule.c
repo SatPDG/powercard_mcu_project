@@ -23,7 +23,9 @@
 #define LED_GPIO GPIO1
 #define LED_GPIO_PIN 5
 #else
-
+#define LED_PORT IOMUXC_GPIO_EMC_41_GPIO3_IO09
+#define LED_GPIO GPIO3
+#define LED_GPIO_PIN 9
 #endif
 
 unsigned int ledStatus = 0;
@@ -51,18 +53,5 @@ void LedModule_Task() {
 			GPIO_PinWrite(LED_GPIO, LED_GPIO_PIN, 1);
 			ledStatus = 0;
 		}
-
-//		unsigned char *ptr = pvPortMalloc(5);
-//		ptr[0] = 0xAA;
-//		ptr[1] = 0xAA;
-//		ptr[2] = 0xAA;
-//		ptr[3] = 0xAA;
-//		ptr[4] = 0xAA;
-//
-//		comData_t data;
-//		data.data = ptr;
-//		data.size = 5;
-//
-//		xQueueSend(uart1TX_queue, &data, 0);
 	}
 }

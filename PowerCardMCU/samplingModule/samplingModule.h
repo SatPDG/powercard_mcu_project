@@ -8,6 +8,11 @@
 #ifndef SAMPLINGMODULE_H_
 #define SAMPLINGMODULE_H_
 
+extern float voltage;
+extern float current;
+extern float power;
+extern float temperature;
+
 void SamplingModule_Init();
 
 void SamplingModule_Task();

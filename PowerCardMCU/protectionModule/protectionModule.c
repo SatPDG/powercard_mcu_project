@@ -36,8 +36,8 @@ const protectionConfig_t protectionOverCurrentConfigList[PROTECTION_NBR_OF_PROTE
 { GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00 },
 { GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00 }, };
 
-unsigned char protectionStateList[256];
-unsigned char protectionOverCurrentList[256];
+unsigned int protectionStateList[256];
+unsigned int protectionOverCurrentList[256];
 
 void ProtectionModule_Init()
 {

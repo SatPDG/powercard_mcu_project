@@ -35,6 +35,7 @@ void Communication_Task() {
 				comData_t outPacket;
 				outPacket.data = 0;
 				outPacket.size = 0;
+				outPacket.driverFlags = message.driverFlags;
 				// Send ack packet
 				CommunicationPacketBuilder_BuildAck(&message.packet,
 						&responseData, &outPacket);
@@ -45,6 +46,7 @@ void Communication_Task() {
 				comData_t outPacket;
 				outPacket.data = 0;
 				outPacket.size = 0;
+				outPacket.driverFlags = message.driverFlags;
 				// Send ack packet
 				CommunicationPacketBuilder_BuildNack(&message.packet,
 						&responseData, &outPacket);

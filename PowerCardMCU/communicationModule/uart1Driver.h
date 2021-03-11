@@ -8,15 +8,10 @@
 #ifndef UART1DRIVER_H_
 #define UART1DRIVER_H_
 
-#include "FreeRTOS.h"
-#include "queue.h"
-
-extern QueueHandle_t uart1TX_queue;
-
 void UART1Driver_Init();
 
-void UART1Driver_RXTask();
+int UART1Driver_Read(unsigned char *buffer, unsigned int size);
 
-void UART1Driver_TXTask();
+int UART1Driver_Write(unsigned char *buffer, unsigned int size);
 
 #endif /* UART1DRIVER_H_ */

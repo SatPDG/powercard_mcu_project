@@ -5,6 +5,8 @@
  *      Author: Leo Clouet
  */
 
+#include "directives.h"
+
 #include <FreeRTOS.h>
 #include <task.h>
 #include "board.h"
@@ -15,7 +17,7 @@
 
 #include "samplingModule.h"
 
-#include "uart1Driver.h"
+#include "serialTask.h"
 #include "communicationModule.h"
 
 #include "flashDriver.h"
@@ -29,11 +31,12 @@ void main() {
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 
+#ifndef POWER_CARD_BOARD
 	ADCDriver_Init();
 
 	SamplingModule_Init();
 
-	UART1Driver_Init();
+	Serial_Init();
 
 	//Init flash
 	FlashDriver_Init();
@@ -46,16 +49,16 @@ void main() {
 
 	// Init the protection
 	ProtectionModule_Init();
-
+#endif
 	if (xTaskCreate(LedModule_Task, "LedTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 3, NULL) != pdTRUE) {
 		while (1);
 	}
-
-	if (xTaskCreate(UART1Driver_RXTask, "serialRXTask", configMINIMAL_STACK_SIZE + 200, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
+#ifndef POWER_CARD_BOARD
+	if (xTaskCreate(Serial_RXTask, "serialRXTask", configMINIMAL_STACK_SIZE + 200, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
 		while (1);
 	}
 
-	if (xTaskCreate(UART1Driver_TXTask, "serialTXTask", configMINIMAL_STACK_SIZE + 200, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
+	if (xTaskCreate(Serial_TXTask, "serialTXTask", configMINIMAL_STACK_SIZE + 200, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
 		while (1);
 	}
 
@@ -72,7 +75,7 @@ void main() {
 	}
 
 	ADCDriver_StartSampling();
-
+#endif
 	vTaskStartScheduler();
 	while (1);
 }

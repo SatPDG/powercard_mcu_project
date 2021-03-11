@@ -20,6 +20,7 @@ unsigned int nbrTemperatureSample = 0;
 
 float voltage;
 float current;
+float power;
 float temperature;
 
 SemaphoreHandle_t sampling_sem;

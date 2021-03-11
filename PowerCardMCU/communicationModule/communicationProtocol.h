@@ -37,11 +37,13 @@ typedef struct {
 typedef struct {
 	comPacket_t packet;
 	QueueHandle_t txQueue;
+	unsigned int driverFlags;
 } serialRxPacket_t;
 
 typedef struct {
 	unsigned int size;
 	unsigned char *data;
+	unsigned int driverFlags;
 } comData_t;
 
 #endif /* COMMUNICATIONPROTOCOL_H_ */
