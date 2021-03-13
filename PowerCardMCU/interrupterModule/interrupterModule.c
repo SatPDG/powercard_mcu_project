@@ -10,7 +10,7 @@
 #include "fsl_gpio.h"
 #include "fsl_iomuxc.h"
 
-#define INTERRUPTER_NBR_OF_INTERRUPTER 2
+#define INTERRUPTER_NBR_OF_INTERRUPTER 0
 
 typedef struct
 {
@@ -23,7 +23,7 @@ typedef struct
 	unsigned int configRegister;
 } interrupterConfig_t;
 
-unsigned char interrupterStateList[256];
+unsigned int interrupterStateList[256];
 const interrupterConfig_t interrupterConfigList[INTERRUPTER_NBR_OF_INTERRUPTER] =
 {
 		{GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00},

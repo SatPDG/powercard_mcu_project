@@ -9,6 +9,7 @@
 
 #include "serialTask.h"
 #include "fsl_lpuart.h"
+#include "fsl_iomuxc.h"
 #include "board.h"
 
 #include "FreeRTOS.h"
@@ -29,6 +30,13 @@ unsigned int uart1TXLastWrite = 0;
 
 void UART1Driver_Init()
 {
+	// Init uart pin
+	{
+		 IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_06_LPUART1_TX, 0U);
+		 IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_07_LPUART1_RX, 0U);
+		 IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_06_LPUART1_TX, 0x10B0u);
+		 IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_07_LPUART1_RX, 0x10B0u);
+	}
 	// Init uart peripheral
 	{
 		lpuart_config_t config;

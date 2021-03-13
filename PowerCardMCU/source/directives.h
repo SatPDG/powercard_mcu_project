@@ -8,8 +8,8 @@
 #ifndef DIRECTIVES_H_
 #define DIRECTIVES_H_
 
-//#define EVK_1020
-#define POWER_CARD_BOARD
+#define EVK_1020
+//#define POWER_CARD_BOARD
 
 #if !defined(EVK_1020) && !defined(POWER_CARD_BOARD)
 #error A bord type must be defined.

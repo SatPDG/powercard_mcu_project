@@ -8,7 +8,7 @@
 #ifndef INTERRUPTERMODULE_H_
 #define INTERRUPTERMODULE_H_
 
-extern unsigned char interrupterStateList[256];
+extern unsigned int interrupterStateList[256];
 
 void InterrupterModule_Init();
 

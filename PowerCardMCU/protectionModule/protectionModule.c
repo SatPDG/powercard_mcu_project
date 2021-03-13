@@ -13,7 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define PROTECTION_NBR_OF_PROTECTION 2
+#define PROTECTION_NBR_OF_PROTECTION 0
 
 typedef struct
 {

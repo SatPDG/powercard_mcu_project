@@ -9,6 +9,7 @@
 
 #include "serialTask.h"
 #include "fsl_lpuart.h"
+#include "fsl_iomuxc.h"
 #include "board.h"
 
 #define USB_RX_BUF_SIZE 300
@@ -25,6 +26,13 @@ unsigned int usbTXLastWrite = 0;
 
 void USBDriver_Init()
 {
+	// Init uart pin
+	{
+		 IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_09_LPUART2_RX, 0U);
+		 IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_08_LPUART2_TX, 0U);
+		 IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_09_LPUART2_RX, 0x10B0u);
+		 IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_08_LPUART2_TX, 0x10B0u);
+	}
 	// Init uart peripheral
 	{
 		lpuart_config_t config;
