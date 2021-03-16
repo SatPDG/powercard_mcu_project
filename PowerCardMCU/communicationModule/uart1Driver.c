@@ -16,8 +16,8 @@
 #include "semphr.h"
 #include "task.h"
 
-#define UART1_RX_BUF_SIZE 300
-#define UART1_TX_BUF_SIZE 300
+#define UART1_RX_BUF_SIZE 512
+#define UART1_TX_BUF_SIZE 512
 
 // Driver attribute
 unsigned char uart1RXBuffer[UART1_RX_BUF_SIZE];

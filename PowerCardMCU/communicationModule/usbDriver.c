@@ -12,8 +12,8 @@
 #include "fsl_iomuxc.h"
 #include "board.h"
 
-#define USB_RX_BUF_SIZE 300
-#define USB_TX_BUF_SIZE 300
+#define USB_RX_BUF_SIZE 512
+#define USB_TX_BUF_SIZE 512
 
 // Driver attribute
 unsigned char usbRXBuffer[USB_RX_BUF_SIZE];

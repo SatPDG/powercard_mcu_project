@@ -26,6 +26,8 @@
 #include "interrupterModule.h"
 #include "protectionModule.h"
 
+#include "bootModule.h"
+
 void main() {
 	BOARD_ConfigMPU();
 	BOARD_InitPins();
@@ -72,6 +74,10 @@ void main() {
 
 	if (xTaskCreate(ProtectionModule_Task, "ProtectionTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
 			while (1);
+	}
+
+	if(xTaskCreate(BootModule_Task, "BootTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
+		while (1);
 	}
 
 	ADCDriver_StartSampling();
