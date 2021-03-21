@@ -13,7 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define PROTECTION_NBR_OF_PROTECTION 0
+#define PROTECTION_NBR_OF_PROTECTION 2
 
 typedef struct
 {
@@ -28,16 +28,11 @@ typedef struct
 
 const protectionConfig_t protectionStateConfigList[PROTECTION_NBR_OF_PROTECTION] =
 {
-{ GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00 },
-{ GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00 }, };
-
-const protectionConfig_t protectionOverCurrentConfigList[PROTECTION_NBR_OF_PROTECTION] =
-{
-{ GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00 },
-{ GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00 }, };
+{ GPIO1, 22, IOMUXC_GPIO_AD_B1_06_GPIO1_IO22 },
+{ GPIO1, 14, IOMUXC_GPIO_AD_B0_14_GPIO1_IO14 },
+};
 
 unsigned int protectionStateList[256];
-unsigned int protectionOverCurrentList[256];
 
 void ProtectionModule_Init()
 {
@@ -45,7 +40,6 @@ void ProtectionModule_Init()
 	for (unsigned int i = 0; i < PROTECTION_NBR_OF_PROTECTION; i++)
 	{
 		const protectionConfig_t *stateConfig = &protectionStateConfigList[i];
-		const protectionConfig_t *currentConfig = &protectionOverCurrentConfigList[i];
 
 		IOMUXC_SetPinMux(stateConfig->muxRegister, stateConfig->muxMode,
 				stateConfig->inputRegister, stateConfig->inputDaisy,
@@ -54,20 +48,21 @@ void ProtectionModule_Init()
 				stateConfig->inputRegister, stateConfig->inputDaisy,
 				stateConfig->configRegister, 0x10B0U);
 
-		IOMUXC_SetPinMux(currentConfig->muxRegister, currentConfig->muxMode,
-				currentConfig->inputRegister, currentConfig->inputDaisy,
-				currentConfig->configRegister, 0);
-		IOMUXC_SetPinConfig(currentConfig->muxRegister, currentConfig->muxMode,
-				currentConfig->inputRegister, currentConfig->inputDaisy,
-				currentConfig->configRegister, 0x10B0U);
-
 		gpio_pin_config_t gpioConfig;
 		gpioConfig.direction = kGPIO_DigitalInput;
 		gpioConfig.interruptMode = kGPIO_NoIntmode;
 		gpioConfig.outputLogic = 0;
 		GPIO_PinInit(stateConfig->gpioPort, stateConfig->gpioPin, &gpioConfig);
-		GPIO_PinInit(currentConfig->gpioPort, currentConfig->gpioPin,
-				&gpioConfig);
+
+		// Read the value to init the protection status.
+		if(GPIO_PinRead(stateConfig->gpioPort, stateConfig->gpioPin))
+		{
+			protectionStateList[i] = PROTECTION_OK;
+		}
+		else
+		{
+			protectionStateList[i] = PROTECTION_NO_CURRENT;
+		}
 	}
 }
 
@@ -81,13 +76,9 @@ void ProtectionModule_Task()
 		for (unsigned int i = 0; i < PROTECTION_NBR_OF_PROTECTION; i++)
 		{
 			const protectionConfig_t *stateConfig = &protectionStateConfigList[i];
-			const protectionConfig_t *currentConfig = &protectionOverCurrentConfigList[i];
 
-			 unsigned int state = GPIO_PinRead(stateConfig->gpioPort, stateConfig->gpioPin);
-			 protectionStateList[i] = (state == 0)? 0 : 1;
-
-			 state = GPIO_PinRead(currentConfig->gpioPort, currentConfig->gpioPin);
-			 protectionOverCurrentList[i] = (state == 0)? 0 : 1;
+			unsigned int state = GPIO_PinRead(stateConfig->gpioPort, stateConfig->gpioPin);
+			protectionStateList[i] = (state == 0)? PROTECTION_NO_CURRENT : PROTECTION_OK;
 		}
 	}
 }

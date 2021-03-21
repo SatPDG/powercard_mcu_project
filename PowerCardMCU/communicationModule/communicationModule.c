@@ -26,6 +26,9 @@ void Communication_Task() {
 			responseData.size = 0;
 			responseData.data = comBuffer;
 
+			// Reset the buffer to 0x00.
+			memset(comBuffer, 0x0, 256);
+
 			unsigned int result = CommunicationExecutor_Execute(
 					message.packet.numFunction, message.packet.numRegister,
 					message.packet.data, message.packet.size - 4,

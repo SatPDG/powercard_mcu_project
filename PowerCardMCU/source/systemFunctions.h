@@ -14,4 +14,6 @@ unsigned int SystemFunctions_ResetToDefault(unsigned int offset, unsigned int co
 
 unsigned int SystemFunctions_ResetMCU(unsigned int offset, unsigned int count, unsigned char *data);
 
+unsigned int SystemFunctions_GetUptime(unsigned int offset, unsigned int count, unsigned char *data, unsigned int *size);
+
 #endif /* SYSTEMFUNCTIONS_H_ */

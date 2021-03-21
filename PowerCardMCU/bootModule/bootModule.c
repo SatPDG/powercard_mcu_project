@@ -14,7 +14,7 @@
 unsigned int bootTimeList[256];
 const unsigned int bootTimeDefaultList[256] =
 {
-	100
+	2000, 10000,
 };
 
 unsigned int bootTickList[256];
@@ -39,7 +39,6 @@ void BootModule_Task()
 	{
 		vTaskDelay(pdMS_TO_TICKS(200));
 		unsigned int currentTick = xTaskGetTickCount();
-		unsigned char hasUpdateInterrupter = 0;
 
 		for(unsigned int i = 0; i < 256; i++)
 		{
@@ -48,13 +47,9 @@ void BootModule_Task()
 				bootHandle[i] = 1;
 
 				// Activate the interrupter.
-				interrupterStateList[i] = 1;
-				hasUpdateInterrupter = 1;
+				InterrupterModule_UpdateInterrupterState(i, INTERRUPTER_OPEN);
 			}
 		}
-
-		if(hasUpdateInterrupter)
-			InterrupterModule_UpdateState();
 
 		// Check if the boot sequence is all done.
 		unsigned char bootSequenceIsFinish = 1;
@@ -71,6 +66,7 @@ void BootModule_Task()
 		{
 			// Kill the task.
 			vTaskDelete(0);
+			while(1);
 		}
 	}
 }

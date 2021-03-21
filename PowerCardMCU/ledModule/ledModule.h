@@ -8,6 +8,8 @@
 #ifndef LEDMODULE_H_
 #define LEDMODULE_H_
 
+extern unsigned int uptime;
+
 void LedModule_Task();
 
 #endif /* LEDMODULE_H_ */

@@ -7,10 +7,15 @@
 
 #include "interrupterModule.h"
 
+#include "protectionModule.h"
+
 #include "fsl_gpio.h"
 #include "fsl_iomuxc.h"
 
-#define INTERRUPTER_NBR_OF_INTERRUPTER 0
+#include "FreeRTOS.h"
+#include "task.h"
+
+#define INTERRUPTER_NBR_OF_INTERRUPTER 2
 
 typedef struct
 {
@@ -26,8 +31,14 @@ typedef struct
 unsigned int interrupterStateList[256];
 const interrupterConfig_t interrupterConfigList[INTERRUPTER_NBR_OF_INTERRUPTER] =
 {
-		{GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00},
-		{GPIO1, 0, IOMUXC_GPIO_AD_B0_00_GPIO1_IO00},
+		{GPIO1, 25, IOMUXC_GPIO_AD_B1_09_GPIO1_IO25},
+		{GPIO1, 24, IOMUXC_GPIO_AD_B1_08_GPIO1_IO24},
+};
+
+unsigned int autoResetInterruptList[256];
+const unsigned int autoResetDefaultList[256] =
+{
+	0
 };
 
 void InterrupterModule_Init()
@@ -45,19 +56,92 @@ void InterrupterModule_Init()
 		gpioConfig.outputLogic = 0;
 		GPIO_PinInit(config->gpioPort, config->gpioPin, &gpioConfig);
 
-
-		unsigned char output = (interrupterStateList[i] == 0) ? 0 : 1;
-		GPIO_PinWrite(config->gpioPort, config->gpioPin, output);
+		GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x0);
 	}
 }
 
-void InterrupterModule_UpdateState()
+unsigned int InterrupterModule_SetInterrupters(unsigned int offset, unsigned int count, unsigned char *data)
 {
-	for(unsigned int i = 0; i < INTERRUPTER_NBR_OF_INTERRUPTER; i++)
+	unsigned int *interrupterPtr = (unsigned int*) data;
+	for(unsigned int i = 0; i < count; i++)
 	{
-		const interrupterConfig_t *config = &interrupterConfigList[i];
+		unsigned int interrupterValue = interrupterPtr[i];
+		InterrupterModule_UpdateInterrupterState(offset + i, interrupterValue);
+	}
+	return 0x1;
+}
 
-		unsigned char output = (interrupterStateList[i] == 0) ? 0 : 1;
-		GPIO_PinWrite(config->gpioPort, config->gpioPin, output);
+void InterrupterModule_UpdateInterrupterState(unsigned int interrupter, unsigned int state)
+{
+	// If the interrupter exist.
+	if(interrupter < INTERRUPTER_NBR_OF_INTERRUPTER){
+		// If we want to close the interrupter
+		if (state == INTERRUPTER_CLOSE)
+		{
+			// If the interrupter is open, close it.
+			if (interrupterStateList[interrupter] == INTERRUPTER_OPEN)
+			{
+				interrupterStateList[interrupter] = INTERRUPTER_CLOSE;
+				const interrupterConfig_t *config =
+						&interrupterConfigList[interrupter];
+				GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x0);
+			}
+		}
+		else if (state == INTERRUPTER_OPEN)
+		{
+			// If the interrupter is close, open it.
+			if (interrupterStateList[interrupter] == INTERRUPTER_CLOSE)
+			{
+				interrupterStateList[interrupter] = INTERRUPTER_OPEN;
+				const interrupterConfig_t *config =
+						&interrupterConfigList[interrupter];
+				GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x1);
+			}
+		}
+		else if (state == INTERRUPTER_RESET)
+		{
+			// If the interrupter is close, just open it.
+			if (interrupterStateList[interrupter] == INTERRUPTER_CLOSE)
+			{
+				interrupterStateList[interrupter] = INTERRUPTER_OPEN;
+				const interrupterConfig_t *config =
+						&interrupterConfigList[interrupter];
+				GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x1);
+			}
+			// If the interrupter is open, close and open it again.
+			else
+			{
+				const interrupterConfig_t *config =
+						&interrupterConfigList[interrupter];
+				// Close the interrupter.
+				GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x0);
+				// Wait some time.
+				for (unsigned int j = 0; j < 100000; j++);
+				// Open the interrupter.
+				GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x1);
+			}
+		}
+	}
+}
+
+void InterrupterModule_AutoResetTask()
+{
+	while(1)
+	{
+		vTaskDelay(pdMS_TO_TICKS(500));
+
+		// Check for all the interrupter which one is on autoreset.
+		for(unsigned int i = 0; i < INTERRUPTER_NBR_OF_INTERRUPTER; i++)
+		{
+			if(autoResetInterruptList[i] == 0x01)
+			{
+				// Check if the protection has cut and the interrupter is open.
+				if(protectionStateList[i] == PROTECTION_NO_CURRENT && interrupterStateList[i] == INTERRUPTER_OPEN)
+				{
+					// Reset the interrupter.
+					InterrupterModule_UpdateInterrupterState(i, INTERRUPTER_RESET);
+				}
+			}
+		}
 	}
 }

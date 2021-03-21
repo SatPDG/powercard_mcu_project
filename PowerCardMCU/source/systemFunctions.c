@@ -12,6 +12,8 @@
 #include "parameterSystem.h"
 
 #include "MIMXRT1021.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 unsigned int SystemFunctions_CommitToFlash(unsigned int offset, unsigned int count, unsigned char *data)
 {
@@ -25,6 +27,7 @@ unsigned int SystemFunctions_CommitToFlash(unsigned int offset, unsigned int cou
 	{
 		return 0;
 	}
+	return 1;
 }
 
 unsigned int SystemFunctions_ResetToDefault(unsigned int offset, unsigned int count, unsigned char *data)
@@ -39,6 +42,7 @@ unsigned int SystemFunctions_ResetToDefault(unsigned int offset, unsigned int co
 	{
 		return 0;
 	}
+	return 1;
 }
 
 unsigned int SystemFunctions_ResetMCU(unsigned int offset, unsigned int count, unsigned char *data)
@@ -55,4 +59,17 @@ unsigned int SystemFunctions_ResetMCU(unsigned int offset, unsigned int count, u
 	{
 		return 0;
 	}
+	return 1;
+}
+
+unsigned int SystemFunctions_GetUptime(unsigned int offset, unsigned int count, unsigned char *data, unsigned int *size)
+{
+//	data[0] = 1;
+//	data[0] = 2;
+//	data[0] = 3;
+//	data[0] = 4;
+	//unsigned int *uptime = (unsigned int *) data;
+	//uptime[0] = xTaskGetTickCount();
+	//*size = 4;
+	return 1;
 }

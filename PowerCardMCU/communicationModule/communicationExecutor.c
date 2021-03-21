@@ -39,7 +39,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 	{
 		result = 0x0;
 		responseData->data[0] = (unsigned char) comerr_badFunction;
-		responseData->size = 1;
+		responseData->size = 4;
 		return result;
 	}
 
@@ -71,7 +71,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 					result = 0x0;
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
-					responseData->size = 1;
+					responseData->size = 4;
 					return result;
 				}
 			}
@@ -79,7 +79,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			{
 				result = 0x0;
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
-				responseData->size = 1;
+				responseData->size = 4;
 				return result;
 			}
 		}
@@ -98,7 +98,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 					{
 						result = 0x0;
 						responseData->data[0] =	(unsigned char) comerr_dataMissing;
-						responseData->size = 1;
+						responseData->size = 4;
 						return result;
 					}
 				}
@@ -107,7 +107,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 					result = 0x0;
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
-					responseData->size = 1;
+					responseData->size = 4;
 					return result;
 				}
 			}
@@ -115,7 +115,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			{
 				result = 0x0;
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
-				responseData->size = 1;
+				responseData->size = 4;
 				return result;
 			}
 		}
@@ -138,7 +138,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 					result = 0x0;
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
-					responseData->size = 1;
+					responseData->size = 4;
 					return result;
 				}
 			}
@@ -146,7 +146,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			{
 				result = 0x0;
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
-				responseData->size = 1;
+				responseData->size = 4;
 				return result;
 			}
 		}
@@ -180,7 +180,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 					result = 0x0;
 					responseData->data[0] =
 							(unsigned char) comerr_illegalAccess;
-					responseData->size = 1;
+					responseData->size = 4;
 					return result;
 				}
 			}
@@ -188,7 +188,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			{
 				result = 0x0;
 				responseData->data[0] = (unsigned char) comerr_dataMissing;
-				responseData->size = 1;
+				responseData->size = 4;
 				return result;
 			}
 		}
@@ -198,7 +198,7 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 		result = 0x0;
 
 		responseData->data[0] = (unsigned char) comerr_regNotFound;
-		responseData->size = 1;
+		responseData->size = 4;
 		return result;
 	}
 
@@ -213,7 +213,7 @@ unsigned int CommunicationExecutor_ExecuteReadAccess(comRegister_t *regPtr,
 	{
 		unsigned int size = 0;
 		unsigned int buffer[256];
-		if (regPtr->ReadFunction(offset, count, (unsigned char*) buffer, size))
+		if (regPtr->ReadFunction(offset, count, (unsigned char*) buffer, &size))
 		{
 			for (unsigned int i = 0; i < size; i++)
 			{

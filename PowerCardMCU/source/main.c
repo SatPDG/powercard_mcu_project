@@ -52,7 +52,7 @@ void main() {
 	// Init the protection
 	ProtectionModule_Init();
 #endif
-	if (xTaskCreate(LedModule_Task, "LedTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 3, NULL) != pdTRUE) {
+	if (xTaskCreate(LedModule_Task, "LedTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 5, NULL) != pdTRUE) {
 		while (1);
 	}
 #ifndef POWER_CARD_BOARD
@@ -72,12 +72,16 @@ void main() {
 		while (1);
 	}
 
-	if (xTaskCreate(ProtectionModule_Task, "ProtectionTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
+	if (xTaskCreate(ProtectionModule_Task, "ProtectionTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
 			while (1);
 	}
 
-	if(xTaskCreate(BootModule_Task, "BootTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
+	if(xTaskCreate(BootModule_Task, "BootTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 3, NULL) != pdTRUE) {
 		while (1);
+	}
+
+	if(xTaskCreate(InterrupterModule_AutoResetTask, "AutoResetTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 1, NULL) != pdTRUE) {
+			while (1);
 	}
 
 	ADCDriver_StartSampling();

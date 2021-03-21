@@ -117,6 +117,9 @@ void ParameterSystem_Load()
 
 void ParameterSystem_ResetToDefault()
 {
+	FlashDriver_EraseSector(FLASH_PARAMETERS_A_ADDRESS);
+	FlashDriver_EraseSector(FLASH_PARAMETERS_B_ADDRESS);
+
 	for(unsigned int i = 0; i < paramEntryListSize; i++)
 	{
 		const paramEntry *param = &paramEntryList[i];

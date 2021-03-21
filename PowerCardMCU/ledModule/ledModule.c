@@ -29,6 +29,7 @@
 #endif
 
 unsigned int ledStatus = 0;
+unsigned int uptime;
 
 void LedModule_Init() {
 	IOMUXC_SetPinMux(LED_PORT, 0U);
@@ -45,6 +46,7 @@ void LedModule_Task() {
 
 	while (1) {
 		vTaskDelay(pdMS_TO_TICKS(200));
+		uptime = xTaskGetTickCount();
 
 		if(ledStatus == 0){
 			GPIO_PinWrite(LED_GPIO, LED_GPIO_PIN, 0);
