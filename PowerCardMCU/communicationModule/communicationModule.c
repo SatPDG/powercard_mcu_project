@@ -10,7 +10,8 @@
 #include "communicationPacketBuilder.h"
 #include "communicationProtocol.h"
 
-#include "uart1Driver.h"
+#include <stdio.h>
+#include <string.h>
 
 QueueHandle_t com_queue;
 unsigned char comBuffer[256];

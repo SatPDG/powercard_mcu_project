@@ -19,9 +19,6 @@
 
 #include <cr_section_macros.h>
 
-static uint8_t s_nor_program_buffer[256];
-static uint8_t s_nor_read_buffer[256];
-
 extern status_t flexspi_nor_flash_erase_sector(FLEXSPI_Type *base, uint32_t address);
 extern status_t flexspi_nor_flash_page_program(FLEXSPI_Type *base, uint32_t dstAddr, const uint32_t *src);
 extern status_t flexspi_nor_get_vendor_id(FLEXSPI_Type *base, uint8_t *vendorId);

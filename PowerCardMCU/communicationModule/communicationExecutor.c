@@ -21,7 +21,8 @@ unsigned int CommunicationExecutor_ExecuteWriteAccess(comRegister_t *regPtr,
 
 unsigned int CommunicationExecutor_ValidateReadAccess(comRegister_t *regPtr);
 unsigned int CommunicationExecutor_ValidateWriteAccess(comRegister_t *regPtr);
-unsigned int CommunicationExecutor_ValidateDataAccess(unsigned int dataSize);
+unsigned int CommunicationExecutor_ValidateDataAccess(unsigned int dataSize,
+		unsigned int count);
 unsigned int CommunicationExecutor_ValidateListAccess(comRegister_t *regPtr,
 		unsigned int offset, unsigned int count);
 
@@ -89,15 +90,17 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 			{
 				if (CommunicationExecutor_ValidateWriteAccess(regPtr))
 				{
-					if(CommunicationExecutor_ValidateDataAccess(dataSize)){
-						result = CommunicationExecutor_ExecuteWriteAccess(regPtr, 0,
-													1, data, dataSize, responseData);
+					if (CommunicationExecutor_ValidateDataAccess(dataSize, 1))
+					{
+						result = CommunicationExecutor_ExecuteWriteAccess(
+								regPtr, 0, 1, data, dataSize, responseData);
 						return result;
 					}
 					else
 					{
 						result = 0x0;
-						responseData->data[0] =	(unsigned char) comerr_dataMissing;
+						responseData->data[0] =
+								(unsigned char) comerr_dataMissing;
 						responseData->size = 4;
 						return result;
 					}
@@ -160,18 +163,20 @@ unsigned int CommunicationExecutor_Execute(unsigned char function,
 						&& CommunicationExecutor_ValidateListAccess(regPtr,
 								offset, count))
 				{
-					if(CommunicationExecutor_ValidateDataAccess(dataSize - 2))
+					if (CommunicationExecutor_ValidateDataAccess(dataSize - 2,
+							count))
 					{
-						result = CommunicationExecutor_ExecuteWriteAccess(regPtr,
-								offset, count, &data[2], dataSize - 2,
+						result = CommunicationExecutor_ExecuteWriteAccess(
+								regPtr, offset, count, &data[2], dataSize - 2,
 								responseData);
 						return result;
 					}
 					else
 					{
 						result = 0x0;
-						responseData->data[0] =(unsigned char) comerr_dataMissing;
-						responseData->size = 1;
+						responseData->data[0] =
+								(unsigned char) comerr_dataMissing;
+						responseData->size = 4;
 						return result;
 					}
 				}
@@ -275,9 +280,10 @@ unsigned int CommunicationExecutor_ValidateWriteAccess(comRegister_t *regPtr)
 	return regPtr->permission & COM_REGISTER_WRITE_ACCESS;
 }
 
-unsigned int CommunicationExecutor_ValidateDataAccess(unsigned int dataSize)
+unsigned int CommunicationExecutor_ValidateDataAccess(unsigned int dataSize,
+		unsigned int count)
 {
-	return (dataSize % 4) == 0;
+	return dataSize == 4 * count;
 }
 
 unsigned int CommunicationExecutor_ValidateListAccess(comRegister_t *regPtr,
