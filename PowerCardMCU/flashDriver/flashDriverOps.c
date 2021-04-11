@@ -2,7 +2,7 @@
  * flashDriverOps.c
  *
  *  Created on: Feb 1, 2021
- *      Author: RMDS
+ *      Author: Leo Clouet
  */
 
 

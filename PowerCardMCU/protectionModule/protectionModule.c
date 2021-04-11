@@ -26,6 +26,7 @@ typedef struct
 	unsigned int configRegister;
 } protectionConfig_t;
 
+// This list hold the link between the protection output and the GPIO.
 const protectionConfig_t protectionStateConfigList[PROTECTION_NBR_OF_PROTECTION] =
 {
 { GPIO1, 22, IOMUXC_GPIO_AD_B1_06_GPIO1_IO22 },

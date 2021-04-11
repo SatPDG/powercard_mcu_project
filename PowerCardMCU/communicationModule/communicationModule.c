@@ -22,7 +22,7 @@ void Communication_Task() {
 
 	while (1) {
 		if (xQueueReceive(com_queue, &message, portMAX_DELAY) == pdTRUE) {
-			// Execute command
+			// Create and set the response data.
 			comData_t responseData;
 			responseData.size = 0;
 			responseData.data = comBuffer;
@@ -30,12 +30,14 @@ void Communication_Task() {
 			// Reset the buffer to 0x00.
 			memset(comBuffer, 0x0, 256);
 
+			// Execute the command.
 			unsigned int result = CommunicationExecutor_Execute(
 					message.packet.numFunction, message.packet.numRegister,
 					message.packet.data, message.packet.size - 4,
 					&responseData);
 
 			if (result) {
+				// If the command execute well, send the ack response.
 				comData_t outPacket;
 				outPacket.data = 0;
 				outPacket.size = 0;
@@ -46,17 +48,18 @@ void Communication_Task() {
 
 				xQueueSend(message.txQueue, &outPacket, 0);
 			} else {
-				// Send nack packet
+				// If an error occur, send the nack response.
 				comData_t outPacket;
 				outPacket.data = 0;
 				outPacket.size = 0;
 				outPacket.driverFlags = message.driverFlags;
-				// Send ack packet
+				// Send nack. packet
 				CommunicationPacketBuilder_BuildNack(&message.packet,
 						&responseData, &outPacket);
 				xQueueSend(message.txQueue, &outPacket, 0);
 			}
 
+			// Free the data of the received message.
 			if(message.packet.data){
 				vPortFree(message.packet.data);
 			}

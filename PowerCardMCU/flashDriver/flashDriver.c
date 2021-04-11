@@ -2,7 +2,16 @@
  * flashDriver.c
  *
  *  Created on: Feb 1, 2021
- *      Author: RMDS
+ *      Author: Leo Clouet
+ *
+ *  This file allow the program to program, read and erase some sector of the flash
+ *  while the MCU is executing the code from the FLASH.
+ *
+ *  To achieve this, some special instruction must be always done before any FLASH special action.
+ *  Those special instruction are in the PreventExecutionOfCodeFromFlash function.
+ *
+ *  This file and some other file are also executed in from the ram and not the FLASH.
+ *  The files in the linkscripts directory manage that.
  */
 
 #include "flashDriver.h"
@@ -96,18 +105,23 @@ status_t FlashDriver_EraseSector(unsigned int address)
 
 void PreventExecutionOfCodeFromFlash()
 {
-  __disable_irq();
-  SCB_DisableDCache();
-  SCB_DisableICache();
+	// This function is a barrier that prevent any FLASH code execution.
+	// Since the code is in the FLASH, the MCU cannot program/erase the FLASH and read code instruction at the same time.
+	__disable_irq();
+	SCB_DisableDCache();	// Disable all cache so no FLASH write is done.
+	SCB_DisableICache();
+	// The two following instruction make sure all the FLASH access are finish.
+	__DSB(); // Force completion of all data access
+	__ISB(); // Flush pipeline
 }
 
 void RestoreExecutionOfCodeFromFlash()
 {
-  SCB_InvalidateICache();
-  SCB_EnableICache();
-  SCB_InvalidateDCache();
-  SCB_EnableDCache();
-  __DSB(); // Force completion of all data access
-  __ISB(); // Flush pipeline
+	SCB_InvalidateICache();		// Enable the cache.
+	SCB_EnableICache();
+	SCB_InvalidateDCache();
+	SCB_EnableDCache();
+	__DSB(); // Force completion of all data access
+	__ISB(); // Flush pipeline
   __enable_irq();
 }

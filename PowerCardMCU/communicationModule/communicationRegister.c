@@ -14,6 +14,7 @@
 #include "systemFunctions.h"
 #include "ledModule.h"
 
+// The register number.
 typedef enum
 {
 	register_tension = 0x1,
@@ -31,6 +32,7 @@ typedef enum
 
 } com_register;
 
+// The register struct.
 comRegister_t registerList[] = {
 		{register_tension, COM_REGISTER_READ_ACCESS, (unsigned char*) &voltage, 0, 0},
 		{register_current, COM_REGISTER_READ_ACCESS, (unsigned char *) &current, 0, 0},

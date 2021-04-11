@@ -58,6 +58,7 @@ int UART1Driver_Read(unsigned char *buffer, unsigned int size)
 	unsigned int count = 0;
 	while (uart1RXLastRead != uart1RXIdx)
 	{
+		// Read all the received data since the last time the function was called.
 		buffer[count] = uart1RXBuffer[uart1RXLastRead];
 		uart1RXLastRead = (uart1RXLastRead + 1) % UART1_RX_BUF_SIZE;
 		count++;
@@ -67,18 +68,22 @@ int UART1Driver_Read(unsigned char *buffer, unsigned int size)
 
 int UART1Driver_Write(unsigned char *buffer, unsigned int size)
 {
+	// Deactivate the irq so the data is all written in the buffer without problems.
 	LPUART_DisableInterrupts(LPUART1,
 			kLPUART_TxDataRegEmptyInterruptEnable);
 
+	// Write all the data in the buffer.
 	for (unsigned int i = 0; i < size; i++)
 	{
 		uart1TXBuffer[uart1TXIdx] = buffer[i];
 		uart1TXIdx = (uart1TXIdx + 1) % UART1_TX_BUF_SIZE;
 	}
 
+	// Send the first byte.
 	LPUART_WriteByte(LPUART1, uart1TXBuffer[uart1TXLastWrite]);
 	uart1TXLastWrite = (uart1TXLastWrite + 1) % UART1_TX_BUF_SIZE;
 
+	// Activate the irq.
 	LPUART_EnableInterrupts(LPUART1,
 			kLPUART_TxDataRegEmptyInterruptEnable);
 	return size;
@@ -90,19 +95,26 @@ void LPUART1_IRQHandler()
 
 	if (flags & kLPUART_RxDataRegFullFlag)
 	{
+		// Something was received by the uart.
+
+		// Reset the interbyte timer.
 		Serial_StartInterbyteTimer();
+		// Save the received byte.
 		uart1RXBuffer[uart1RXIdx] = LPUART_ReadByte(LPUART1);
 		uart1RXIdx = (uart1RXIdx + 1) % UART1_RX_BUF_SIZE;
 	}
 	else if (flags & kLPUART_TxDataRegEmptyFlag)
 	{
+		// The uart is ready to send another byte.
 		if (uart1TXIdx != uart1TXLastWrite)
 		{
+			// If the write buffer is not empty, send the next byte.
 			LPUART_WriteByte(LPUART1, uart1TXBuffer[uart1TXLastWrite]);
 			uart1TXLastWrite = (uart1TXLastWrite + 1) % UART1_TX_BUF_SIZE;
 		}
 		else
 		{
+			// Nothing more to send, deactivate the send irq.
 			LPUART_DisableInterrupts(LPUART1,
 					kLPUART_TxDataRegEmptyInterruptEnable);
 		}

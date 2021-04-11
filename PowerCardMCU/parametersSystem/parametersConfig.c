@@ -2,7 +2,7 @@
  * parametersConfig.c
  *
  *  Created on: Feb 1, 2021
- *      Author: RMDS
+ *      Author: Leo Clouet
  */
 
 #include "parametersConfig.h"
@@ -10,6 +10,7 @@
 #include "bootModule.h"
 #include "interrupterModule.h"
 
+// The parameters list.
 const paramEntry paramEntryList[] =
 {
 	{16, (unsigned char*) bootTimeList, (unsigned char*) bootTimeDefaultList},

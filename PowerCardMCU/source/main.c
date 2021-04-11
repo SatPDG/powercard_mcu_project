@@ -29,6 +29,7 @@
 #include "bootModule.h"
 
 void main() {
+	// Init the MCU principal pins and clock
 	BOARD_ConfigMPU();
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
@@ -84,8 +85,11 @@ void main() {
 			while (1);
 	}
 
+	// Start the adc chain.
 	ADCDriver_StartSampling();
 #endif
+
+	// Start the OS.
 	vTaskStartScheduler();
 	while (1);
 }

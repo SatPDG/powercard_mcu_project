@@ -27,6 +27,7 @@ SemaphoreHandle_t sampling_sem;
 
 void SamplingModule_Init()
 {
+	// Init the semaphore that protect the data.
 	sampling_sem = xSemaphoreCreateBinary();
 	xSemaphoreGive(sampling_sem);
 }
@@ -39,12 +40,19 @@ void SamplingModule_Task()
 
 		if (xSemaphoreTake(sampling_sem, portMAX_DELAY))
 		{
-
+			// Get the average value of all the collected sample.
 			voltage = (float) voltageAccumulate / (float) nbrVoltageSample;
 			current = (float) currentAccumulate / (float) nbrCurrentSample;
 			temperature = (float) temperatureAccumulate
 					/ (float) nbrTemperatureSample;
 
+			// Compute the real value.
+			voltage *= 1;
+			current *= 1;
+			temperature *= 1;
+			power = voltage * current;
+
+			// Reset the average values.
 			voltageAccumulate = 0;
 			currentAccumulate = 0;
 			temperatureAccumulate = 0;
@@ -64,7 +72,7 @@ void SamplingModule_PushSamples(unsigned short voltage, unsigned short current,
 	if (xSemaphoreTakeFromISR(sampling_sem,
 			&pxHigherPriorityTaskWoken) == pdTRUE)
 	{
-
+		// Add the sample to the average value.
 		voltageAccumulate += voltage;
 		nbrVoltageSample++;
 		currentAccumulate += current;

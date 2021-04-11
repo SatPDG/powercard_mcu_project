@@ -9,10 +9,13 @@
 
 #include "samplingModule.h"
 
+#define PIT_FREQUENCY 24000000
+#define SAMPLING_FREQUENCY 100
+
 void ADCDriver_Init()
 {
 
-	// Init timer
+	// Init the timer that trigger tha sampling action.
 	{
 		CLOCK_SetMux(kCLOCK_PerclkMux, 1U);
 		CLOCK_SetDiv(kCLOCK_PerclkDiv, 0U);
@@ -20,13 +23,10 @@ void ADCDriver_Init()
 		pit_config_t pitConfig;
 		PIT_GetDefaultConfig(&pitConfig);
 		PIT_Init(PIT, &pitConfig);
-		PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, (24000000 / 100) - 1);
-		//PIT_EnableInterrupts(PIT, 0, kPIT_TimerInterruptEnable);
-
-		//NVIC_EnableIRQ(PIT_IRQn);
+		PIT_SetTimerPeriod(PIT, kPIT_Chnl_0, (PIT_FREQUENCY / SAMPLING_FREQUENCY) - 1);
 	}
 
-	// Init xbara pit -> adc etc
+	// Init the link between the timer event and the adc_etc via the xbara.
 	{
 		CLOCK_EnableClock(kCLOCK_Xbar1);
 
@@ -35,7 +35,7 @@ void ADCDriver_Init()
 				kXBARA1_OutputAdcEtcTrig00);
 	}
 
-	// Init adc
+	// Init the adc for sampling.
 	{
 		adc_config_t k_adcConfig;
 		adc_channel_config_t adcChannelConfigStruct;
@@ -54,7 +54,7 @@ void ADCDriver_Init()
 		ADC_DoAutoCalibration(ADC1);
 	}
 
-	// Init adc_etc
+	// Init the adc_etc. This peripheral sample 3 channels one by one when an event occur.
 	{
 		adc_etc_config_t adcEtcConfig;
 		adc_etc_trigger_config_t adcEtcTriggerConfig;
@@ -74,36 +74,33 @@ void ADCDriver_Init()
 
 		adcEtcTriggerChainConfig.enableB2BMode = true;
 		adcEtcTriggerChainConfig.ADCHCRegisterSelect = 1U << 0;
-		adcEtcTriggerChainConfig.ADCChannelSelect = 10;
+		adcEtcTriggerChainConfig.ADCChannelSelect = 13;			// Battery current
 		adcEtcTriggerChainConfig.InterruptEnable =
 				kADC_ETC_InterruptDisable;
 		ADC_ETC_SetTriggerChainConfig(ADC_ETC, 0U, 0U,
 				&adcEtcTriggerChainConfig);
 
 		adcEtcTriggerChainConfig.ADCHCRegisterSelect = 1U << 1;
-		adcEtcTriggerChainConfig.ADCChannelSelect = 11;
+		adcEtcTriggerChainConfig.ADCChannelSelect = 14;			// Battery voltage
 		adcEtcTriggerChainConfig.InterruptEnable =
 				kADC_ETC_InterruptDisable;
 		ADC_ETC_SetTriggerChainConfig(ADC_ETC, 0U, 1U,
 				&adcEtcTriggerChainConfig);
 
 		adcEtcTriggerChainConfig.ADCHCRegisterSelect = 1U << 1;
-		adcEtcTriggerChainConfig.ADCChannelSelect = 12;
+		adcEtcTriggerChainConfig.ADCChannelSelect = 15;			// Temperature sensor
 		adcEtcTriggerChainConfig.InterruptEnable =
 				kADC_ETC_Done0InterruptEnable;
 		ADC_ETC_SetTriggerChainConfig(ADC_ETC, 0U, 2U,
 				&adcEtcTriggerChainConfig);
 
+		// Enable the interrupt to the software can take the sample.
 		NVIC_SetPriority(ADC_ETC_IRQ0_IRQn, 2);
 		NVIC_EnableIRQ(ADC_ETC_IRQ0_IRQn);
-		//NVIC_EnableIRQ(ADC_ETC_IRQ1_IRQn);
 	}
 
-	// Pin init
+	// Init the adc pin
 	{
-		IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_10_GPIO1_IO26, 0xB0u);
-		IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_11_GPIO1_IO27, 0xB0u);
-		IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_12_GPIO1_IO28, 0xB0u);
 		IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_13_GPIO1_IO29, 0xB0u);
 		IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_14_GPIO1_IO30, 0xB0u);
 		IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B1_15_GPIO1_IO31, 0xB0u);
@@ -115,20 +112,17 @@ void ADCDriver_StartSampling()
 	PIT_StartTimer(PIT, kPIT_Chnl_0);
 }
 
-//void PIT_IRQHandler()
-//{
-//	PIT_ClearStatusFlags(PIT, 0, kPIT_TimerFlag);
-//}
-
 void ADC_ETC_IRQ0_IRQHandler(void)
 {
 	ADC_ETC_ClearInterruptStatusFlags(ADC_ETC, kADC_ETC_Trg0TriggerSource,
 			kADC_ETC_Done0StatusFlagMask);
 
-	unsigned short voltage = ADC_ETC_GetADCConversionValue(ADC_ETC, 0, 0);
+	// Get the sample.
+	unsigned short voltage = ADC_ETC_GetADCConversionValue(ADC_ETC, 0, 1);
 	unsigned short current = ADC_ETC_GetADCConversionValue(ADC_ETC, 0, 0);
-	unsigned short temperature = ADC_ETC_GetADCConversionValue(ADC_ETC, 0, 0);
+	unsigned short temperature = ADC_ETC_GetADCConversionValue(ADC_ETC, 0, 2);
 
+	// Send the sample to the treatment.
 	SamplingModule_PushSamples(voltage, current, temperature);
 
 	__DSB();

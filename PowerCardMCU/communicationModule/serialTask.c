@@ -40,10 +40,12 @@ void Serial_Init()
 	serialRX_sem = xSemaphoreCreateBinary();
 	serialTX_queue = xQueueCreate(2, sizeof(comData_t));
 
+	// Init the parser from the uart and usb port.
 	CommunicationParser_Init(&uart1Parser);
 	CommunicationParser_Init(&usbParser);
 
-	// Init timer peripheral
+	// Init the time peripheral. This timer is the interbyte timer.
+	// When an event occur, that mean that a complete message has been sent.
 	{
 		gpt_config_t gptConfig;
 		unsigned int gptFreq = 0;
@@ -73,9 +75,11 @@ void Serial_StartInterbyteTimer()
 
 void GPT2_IRQHandler()
 {
+	// When this IRQ occur, a complet message has been received in one of the uart.
 	GPT_ClearStatusFlags(GPT2, kGPT_OutputCompare1Flag);
 	GPT_StopTimer(GPT2);
 
+	// Raise the serial rx semaphore to start the data collect process.
 	timeoutFlag = 1;
 	long priority;
 	xSemaphoreGiveFromISR(serialRX_sem, &priority);
@@ -88,20 +92,23 @@ void Serial_RXTask()
 	{
 		if (xSemaphoreTake(serialRX_sem, portMAX_DELAY) == pdTRUE)
 		{
+			// Disable irq to take the right value of timeout flags.
 			__disable_irq();
 			unsigned int currentTimeout = timeoutFlag;
 			timeoutFlag = 0;
 			__enable_irq();
 
-			// Check the uart1 driver
+			// Check the uart1 driver.
 			{
+				// Fetch the data in the uart.
 				unsigned int count = UART1Driver_Read(rxBuffer, 256);
 				if(count  > 0)
 				{
-					// Parse data
+					// Parse the data.
 					unsigned int result = CommunicationParser_Parse(&uart1Parser, rxBuffer, count);
 					if (result)
 					{
+						// A valid message was found. Take it and send it to the communication task.
 						serialRxPacket_t message;
 						message.packet = uart1Parser.packet;
 						message.txQueue = serialTX_queue;
@@ -117,13 +124,15 @@ void Serial_RXTask()
 
 			// Check the usb driver
 			{
+				// Fetch the data in the uart.
 				unsigned int count = USBDriver_Read(rxBuffer, 256);
 				if(count  > 0)
 				{
-					// Parse data
+					// Parse the data.
 					unsigned int result = CommunicationParser_Parse(&usbParser, rxBuffer, count);
 					if (result)
 					{
+						// A valid message was found. Take it and send it to the communication task.
 						serialRxPacket_t message;
 						message.packet = usbParser.packet;
 						message.txQueue = serialTX_queue;
@@ -154,8 +163,11 @@ void Serial_TXTask()
 	{
 		if (xQueueReceive(serialTX_queue, &message, portMAX_DELAY))
 		{
+			// Suspend the os, so the data is write the without interruption.
+			// Also because the uart deactivate it's irq. So the OS must not be running.
 			vTaskSuspendAll();
 
+			// Select the right uart to send the data to.
 			if(message.driverFlags == UART1_DRIVER_FLAG){
 				UART1Driver_Write(message.data, message.size);
 			}else if(message.driverFlags == USB_DRIVER_FLAG){
@@ -164,6 +176,7 @@ void Serial_TXTask()
 
 			xTaskResumeAll();
 
+			// Free the data.
 			vPortFree(message.data);
 		}
 	}

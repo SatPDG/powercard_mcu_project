@@ -3,6 +3,12 @@
  *
  *  Created on: Feb. 16, 2021
  *      Author: Leo Clouet
+ *
+ *  This module, deal with the interrupter.
+ *  Since in the last design, the interrupter are in fact the enable pin of the efuse,
+ *  this module is link with the protection module.
+ *
+ *  The auto reset task, make sure that if a efuse blow, the efuse is enable not long after by the MCU.
  */
 
 #include "interrupterModule.h"
@@ -29,6 +35,7 @@ typedef struct
 } interrupterConfig_t;
 
 unsigned int interrupterStateList[256];
+// The list that link the interrupter and it's GPIO.
 const interrupterConfig_t interrupterConfigList[INTERRUPTER_NBR_OF_INTERRUPTER] =
 {
 		{GPIO1, 25, IOMUXC_GPIO_AD_B1_09_GPIO1_IO25},
@@ -43,6 +50,7 @@ const unsigned int autoResetDefaultList[256] =
 
 void InterrupterModule_Init()
 {
+	// Init the GPIO for each interrupter.
 	for(unsigned int i = 0; i < INTERRUPTER_NBR_OF_INTERRUPTER; i++)
 	{
 		const interrupterConfig_t *config = &interrupterConfigList[i];
@@ -56,16 +64,19 @@ void InterrupterModule_Init()
 		gpioConfig.outputLogic = 0;
 		GPIO_PinInit(config->gpioPort, config->gpioPin, &gpioConfig);
 
+		// Set the interrupter to low.
 		GPIO_PinWrite(config->gpioPort, config->gpioPin, 0x0);
 	}
 }
 
 unsigned int InterrupterModule_SetInterrupters(unsigned int offset, unsigned int count, unsigned char *data)
 {
+	// Set the value of the list of interrupter sent in parameters.
 	unsigned int *interrupterPtr = (unsigned int*) data;
 	for(unsigned int i = 0; i < count; i++)
 	{
 		unsigned int interrupterValue = interrupterPtr[i];
+		// Update the GPIO link to the interrupter.
 		InterrupterModule_UpdateInterrupterState(offset + i, interrupterValue);
 	}
 	return 0x1;
@@ -130,9 +141,10 @@ void InterrupterModule_AutoResetTask()
 	{
 		vTaskDelay(pdMS_TO_TICKS(500));
 
-		// Check for all the interrupter which one is on autoreset.
+		// Check for all the interrupter.
 		for(unsigned int i = 0; i < INTERRUPTER_NBR_OF_INTERRUPTER; i++)
 		{
+			// If the interrupter is in the auto reset list.
 			if(autoResetInterruptList[i] == 0x01)
 			{
 				// Check if the protection has cut and the interrupter is open.

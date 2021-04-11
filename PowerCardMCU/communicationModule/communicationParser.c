@@ -27,6 +27,7 @@ unsigned int CommunicationParser_Parse(comParser_t *parser, unsigned char *data,
 		{
 		case parser_startByte:
 		{
+			// If the data was not free yet, free it.
 			if(parser->packet.data != 0){
 				vPortFree(parser->packet.data);
 				parser->packet.data = 0;
@@ -70,6 +71,7 @@ unsigned int CommunicationParser_Parse(comParser_t *parser, unsigned char *data,
 		}
 		case parser_data:
 		{
+			// If no data was allocated for the data field, allocate it.
 			if (parser->packet.data == 0)
 			{
 				parser->packet.data = pvPortMalloc(parser->packet.size - 4);
@@ -99,14 +101,18 @@ unsigned int CommunicationParser_Parse(comParser_t *parser, unsigned char *data,
 			unsigned short computedCrc = CRC16_Compute(startBuf, 4);
 			computedCrc = CRC16_Accumulate(computedCrc, parser->packet.data, parser->receivedData);
 
+			parser->state = parser_startByte;
+
 			if(parser->crc == computedCrc){
+				// If a valid message was found, return right away to
+				// evitate the free on the data in the start byte case.
 				result = 0x1;
+				return result;
 			}
 			else
 			{
 				result = 0x0;
 			}
-			parser->state = parser_startByte;
 			break;
 		}
 		}
@@ -116,5 +122,6 @@ unsigned int CommunicationParser_Parse(comParser_t *parser, unsigned char *data,
 
 void CommunicationParser_Flush(comParser_t *parser)
 {
+	// Just reset the paser state, the data will be freed in the start byte case.
 	parser->state = parser_startByte;
 }

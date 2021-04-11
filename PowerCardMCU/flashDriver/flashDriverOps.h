@@ -2,7 +2,7 @@
  * flashDriverOps.h
  *
  *  Created on: Feb 1, 2021
- *      Author: RMDS
+ *      Author: Leo Clouet
  */
 
 #ifndef FLASHDRIVEROPS_H_

@@ -2,7 +2,14 @@
  * parameterSystem.c
  *
  *  Created on: Feb 1, 2021
- *      Author: RMDS
+ *      Author: Leo Clouet
+ *
+ *  The parameter system allow the system to save some parameters value in the FLASH.
+ *  The parameters are saved in 2 copy in the FLASH. This add some robustness to the system.
+ *  If some sector of the FLASH is corrupt, at least the parameters are saved in another
+ *  place of the FLASH.
+ *  The parameters to save are in the parameterConfig.c.
+ *  The parameters put in FLASH are divided in entry. Each entry can hold a maximum of 16 bytes.
  */
 
 #include "parameterSystem.h"
@@ -18,6 +25,7 @@
 #define PARAMETER_SYSTEM_RESERVED_2_VAL 0xAABBCCDD
 #define PARAMETER_SYSTEM_RESERVED_3_VAL 0x99887766
 
+// The first entry of the flash system. It hold a crc and a size to ensure the sector integrity.
 typedef struct
 {
 	unsigned short crc;
@@ -103,6 +111,7 @@ void ParameterSystem_Load()
 	flashHeader *header = (flashHeader*) flashBuffer;
 	flashParamEntry *entryList = (flashParamEntry*) flashBuffer + sizeof(flashHeader);
 
+	// For each parameters, copy the value to the ram pointer.
 	for(unsigned int i = 0; i < paramEntryListSize && i < header->entryCount; i++)
 	{
 		flashParamEntry *flashEntry = &entryList[i];
@@ -117,9 +126,11 @@ void ParameterSystem_Load()
 
 void ParameterSystem_ResetToDefault()
 {
+	// Erase all the param sector.
 	FlashDriver_EraseSector(FLASH_PARAMETERS_A_ADDRESS);
 	FlashDriver_EraseSector(FLASH_PARAMETERS_B_ADDRESS);
 
+	// Set all the parameters to their default.
 	for(unsigned int i = 0; i < paramEntryListSize; i++)
 	{
 		const paramEntry *param = &paramEntryList[i];
@@ -132,10 +143,10 @@ void ParameterSystem_ResetToDefault()
 
 void ParameterSystem_CommitToFlash()
 {
-	FlashDriver_EraseSector(FLASH_PARAMETERS_A_ADDRESS);
-	FlashDriver_EraseSector(FLASH_PARAMETERS_B_ADDRESS);
+	//FlashDriver_EraseSector(FLASH_PARAMETERS_B_ADDRESS);
 
-	FlashDriver_ReadBytes(FLASH_PARAMETERS_A_ADDRESS, flashBuffer, 4096);
+	//FlashDriver_ReadBytes(FLASH_PARAMETERS_A_ADDRESS, flashBuffer, 4096);
+	memset(flashBuffer, 0xFF, 4096);
 
 	flashHeader *header = (flashHeader*) flashBuffer;
 	flashParamEntry *entryList = (flashParamEntry*) flashBuffer + sizeof(flashHeader);
@@ -158,12 +169,25 @@ void ParameterSystem_CommitToFlash()
 	// Compute the crc.
 	header->crc = ParameterSystem_GetCrc(flashBuffer);
 
-	// Commit the buffer to flash
+	// Erase and program the param A and B after the A is done.
+	// This allow the parameters to always have a valid version of themselve.
+
+	// Erase the param A.
+	FlashDriver_EraseSector(FLASH_PARAMETERS_A_ADDRESS);
+	// Commit the buffer to the param A.
 	for(unsigned int i = 0; i < (FLASH_SECTOR_SIZE / FLASH_PAGE_SIZE); i++)
 	{
-		FlashDriver_ProgramPage(FLASH_PARAMETERS_A_ADDRESS + (i * FLASH_PAGE_SIZE), flashBuffer + (i * FLASH_PAGE_SIZE));
+			FlashDriver_ProgramPage(FLASH_PARAMETERS_A_ADDRESS + (i * FLASH_PAGE_SIZE), flashBuffer + (i * FLASH_PAGE_SIZE));
+	}
+
+	// Erase the param B.
+	FlashDriver_EraseSector(FLASH_PARAMETERS_B_ADDRESS);
+	// Commit the buffer to the param B.
+	for(unsigned int i = 0; i < (FLASH_SECTOR_SIZE / FLASH_PAGE_SIZE); i++)
+	{
 		FlashDriver_ProgramPage(FLASH_PARAMETERS_B_ADDRESS + (i * FLASH_PAGE_SIZE), flashBuffer + (i * FLASH_PAGE_SIZE));
 	}
+
 }
 
 unsigned int ParameterSystem_IsValidSystem(unsigned char *buffer)

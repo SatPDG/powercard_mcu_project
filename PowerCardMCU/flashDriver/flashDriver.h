@@ -2,7 +2,7 @@
  * flashDriver.h
  *
  *  Created on: Feb 1, 2021
- *      Author: RMDS
+ *      Author: Leo Clouet
  */
 
 #ifndef FLASHDRIVER_H_

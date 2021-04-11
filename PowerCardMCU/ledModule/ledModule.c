@@ -3,6 +3,10 @@
  *
  *  Created on: Jan. 9, 2021
  *      Author: Leo Clouet
+ *
+ *
+ *  This module hold only one task that toggle a LED.
+ *  This help to indicate if the MCU is stalled, stopped or is running with no problem.
  */
 
 #include "ledModule.h"

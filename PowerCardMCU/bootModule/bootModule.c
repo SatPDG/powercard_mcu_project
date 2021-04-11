@@ -3,6 +3,9 @@
  *
  *  Created on: Mar. 16, 2021
  *      Author: Leo Clouet
+ *
+ *  This module enable the interrupter for each peripheral when a delay is meet for each interrupter.
+ *  If the value in the boot time list is NO_BOOT, the interrupter will not be enable.
  */
 
 #include "bootModule.h"
@@ -10,6 +13,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "interrupterModule.h"
+
+#define NO_BOOT 0xFFFFFFFF
 
 unsigned int bootTimeList[256];
 const unsigned int bootTimeDefaultList[256] =
@@ -30,8 +35,15 @@ void BootModule_Task()
 	// Convert ms to system tick.
 	for(unsigned int i = 0; i < 256; i++)
 	{
-		bootHandle[i] = 0;
-		bootTickList[i] = pdMS_TO_TICKS(bootTimeList[i]);
+		if(bootTimeList[i] == NO_BOOT)
+		{
+			bootHandle[i] = 1;
+		}
+		else
+		{
+			bootHandle[i] = 0;
+			bootTickList[i] = pdMS_TO_TICKS(bootTimeList[i]);
+		}
 	}
 
 

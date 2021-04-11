@@ -3,6 +3,9 @@
  *
  *  Created on: Feb. 16, 2021
  *      Author: Leo Clouet
+ *
+ *  This module manage the 8 segments.
+ *  It takes the voltage sampling lecture and display it on the 8 segments.
  */
 
 #include "segmentModule.h"
