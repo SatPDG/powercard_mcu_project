@@ -82,6 +82,14 @@ unsigned int InterrupterModule_SetInterrupters(unsigned int offset, unsigned int
 	return 0x1;
 }
 
+void InterrupterModule_CloseAllInterrupter()
+{
+	for(unsigned int i = 0; i < INTERRUPTER_NBR_OF_INTERRUPTER; i++)
+	{
+		InterrupterModule_UpdateInterrupterState(i, INTERRUPTER_CLOSE);
+	}
+}
+
 void InterrupterModule_UpdateInterrupterState(unsigned int interrupter, unsigned int state)
 {
 	// If the interrupter exist.

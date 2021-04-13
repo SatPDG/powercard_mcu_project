@@ -28,18 +28,28 @@
 
 #include "bootModule.h"
 
+#include "watchdogModule.h"
+
 void main() {
+
+#ifndef DEBUG
+	// Init the watchdog.
+	{
+		Watchdog_Init();
+	}
+#endif
+
 	// Init the MCU principal pins and clock
 	BOARD_ConfigMPU();
 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 
+	Serial_Init();
+
 #ifndef POWER_CARD_BOARD
 	ADCDriver_Init();
 
 	SamplingModule_Init();
-
-	Serial_Init();
 
 	//Init flash
 	FlashDriver_Init();
@@ -56,7 +66,7 @@ void main() {
 	if (xTaskCreate(LedModule_Task, "LedTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 5, NULL) != pdTRUE) {
 		while (1);
 	}
-#ifndef POWER_CARD_BOARD
+
 	if (xTaskCreate(Serial_RXTask, "serialRXTask", configMINIMAL_STACK_SIZE + 200, NULL, configMAX_PRIORITIES, NULL) != pdTRUE) {
 		while (1);
 	}
@@ -69,6 +79,7 @@ void main() {
 		while (1);
 	}
 
+#ifndef POWER_CARD_BOARD
 	if (xTaskCreate(SamplingModule_Task, "SamplingTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
 		while (1);
 	}

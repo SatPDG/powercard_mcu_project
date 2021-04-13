@@ -20,6 +20,8 @@ void InterrupterModule_Init();
 
 unsigned int InterrupterModule_SetInterrupters(unsigned int offset, unsigned int count, unsigned char *data);
 
+void InterrupterModule_CloseAllInterrupter();
+
 void InterrupterModule_UpdateInterrupterState(unsigned int interrupter, unsigned int state);
 
 void InterrupterModule_AutoResetTask();

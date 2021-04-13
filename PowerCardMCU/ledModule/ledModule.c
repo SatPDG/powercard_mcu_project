@@ -22,6 +22,8 @@
 #include "communicationProtocol.h"
 #include "uart1Driver.h"
 
+#include "watchdogModule.h"
+
 #ifdef EVK_1020
 #define LED_PORT IOMUXC_GPIO_AD_B0_05_GPIO1_IO05
 #define LED_GPIO GPIO1
@@ -59,5 +61,10 @@ void LedModule_Task() {
 			GPIO_PinWrite(LED_GPIO, LED_GPIO_PIN, 1);
 			ledStatus = 0;
 		}
+
+#ifndef DEBUG
+		// Feed the watchdog.
+		Watchdog_Feed();
+#endif
 	}
 }
