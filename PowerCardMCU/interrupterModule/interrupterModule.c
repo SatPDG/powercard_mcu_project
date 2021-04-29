@@ -21,7 +21,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define INTERRUPTER_NBR_OF_INTERRUPTER 2
+#define INTERRUPTER_NBR_OF_INTERRUPTER 16
 
 typedef struct
 {
@@ -38,14 +38,43 @@ unsigned int interrupterStateList[256];
 // The list that link the interrupter and it's GPIO.
 const interrupterConfig_t interrupterConfigList[INTERRUPTER_NBR_OF_INTERRUPTER] =
 {
-		{GPIO1, 25, IOMUXC_GPIO_AD_B1_09_GPIO1_IO25},
-		{GPIO1, 24, IOMUXC_GPIO_AD_B1_08_GPIO1_IO24},
+		{GPIO2, 8, IOMUXC_GPIO_EMC_08_GPIO2_IO08}, // Ethernet
+		{GPIO2, 6, IOMUXC_GPIO_EMC_06_GPIO2_IO06}, // Mobile
+		{GPIO2, 5, IOMUXC_GPIO_EMC_05_GPIO2_IO05}, // Lidar
+		{GPIO2, 4, IOMUXC_GPIO_EMC_04_GPIO2_IO04}, // Camera
+		{GPIO2, 3, IOMUXC_GPIO_EMC_03_GPIO2_IO03}, // Jetson
+		{GPIO3, 15, IOMUXC_GPIO_SD_B0_02_GPIO3_IO15}, // 12v output 1
+		{GPIO3, 16, IOMUXC_GPIO_SD_B0_03_GPIO3_IO16}, // 12v output 2
+		{GPIO3, 18, IOMUXC_GPIO_SD_B0_05_GPIO3_IO18}, // 12v output 3
+		{GPIO3, 19, IOMUXC_GPIO_SD_B0_06_GPIO3_IO19}, // 12v output 4
+		{GPIO3, 13, IOMUXC_GPIO_SD_B0_00_GPIO3_IO13}, // Led 1
+		{GPIO3, 14, IOMUXC_GPIO_SD_B0_01_GPIO3_IO14}, // Led 2
+		{GPIO2, 9, IOMUXC_GPIO_EMC_09_GPIO2_IO09}, // Wifi
+		{GPIO2, 10, IOMUXC_GPIO_EMC_10_GPIO2_IO10}, // 5v output 1
+		{GPIO2, 11, IOMUXC_GPIO_EMC_11_GPIO2_IO11}, // 5v output 2
+		{GPIO3, 7, IOMUXC_GPIO_EMC_39_GPIO3_IO07}, // 5v output 3
+		{GPIO3, 6, IOMUXC_GPIO_EMC_38_GPIO3_IO06}, // 5v output 4
 };
 
 unsigned int autoResetInterruptList[256];
 const unsigned int autoResetDefaultList[256] =
 {
-	0
+	0, // Ethernet
+	0, // Mobile
+	0, // Lidar
+	0, // Camera
+	0, // Jetson
+	0, // 12v output 1
+	0, // 12v output 2
+	0, // 12v output 3
+	0, // 12v ouptut 4
+	0, // Led 1
+	0, // Led 2
+	0, // Wifi
+	0, // 5v output 1
+	0, // 5v output 2
+	0, // 5v output 3
+	0, // 5v output 4
 };
 
 void InterrupterModule_Init()

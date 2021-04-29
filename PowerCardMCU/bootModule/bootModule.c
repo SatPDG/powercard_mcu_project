@@ -19,7 +19,22 @@
 unsigned int bootTimeList[256];
 const unsigned int bootTimeDefaultList[256] =
 {
-	2000, 10000,
+	0, // Ethernet
+	0, // Mobile
+	0, // Lidar
+	0, // Camera
+	0, // Jetson
+	0, // 12v output 1
+	0, // 12v output 2
+	0, // 12v output 3
+	0, // 12v ouptut 4
+	0, // Led 1
+	0, // Led 2
+	0, // Wifi
+	0, // 5v output 1
+	0, // 5v output 2
+	0, // 5v output 3
+	0, // 5v output 4
 };
 
 unsigned int bootTickList[256];

@@ -13,7 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define PROTECTION_NBR_OF_PROTECTION 2
+#define PROTECTION_NBR_OF_PROTECTION 16
 
 typedef struct
 {
@@ -29,8 +29,22 @@ typedef struct
 // This list hold the link between the protection output and the GPIO.
 const protectionConfig_t protectionStateConfigList[PROTECTION_NBR_OF_PROTECTION] =
 {
-{ GPIO1, 22, IOMUXC_GPIO_AD_B1_06_GPIO1_IO22 },
-{ GPIO1, 14, IOMUXC_GPIO_AD_B0_14_GPIO1_IO14 },
+		{GPIO1, 3, IOMUXC_GPIO_AD_B0_03_GPIO1_IO03}, // Ethernet
+		{GPIO1, 9, IOMUXC_GPIO_AD_B0_09_GPIO1_IO09}, // Mobile
+		{GPIO1, 5, IOMUXC_GPIO_AD_B0_05_GPIO1_IO05}, // Lidar
+		{GPIO1, 8, IOMUXC_GPIO_AD_B0_08_GPIO1_IO08}, // Camera
+		{GPIO1, 4, IOMUXC_GPIO_AD_B0_04_GPIO1_IO04}, // Jetson
+		{GPIO1, 19, IOMUXC_GPIO_AD_B1_03_GPIO1_IO19}, // 12v output 1
+		{GPIO1, 18, IOMUXC_GPIO_AD_B1_02_GPIO1_IO18}, // 12v output 2
+		{GPIO1, 17, IOMUXC_GPIO_AD_B1_01_GPIO1_IO17}, // 12v output 3
+		{GPIO1, 16, IOMUXC_GPIO_AD_B1_00_GPIO1_IO16}, // 12v output 4
+		{GPIO1, 27, IOMUXC_GPIO_AD_B1_11_GPIO1_IO27}, // Led 1
+		{GPIO1, 28, IOMUXC_GPIO_AD_B1_12_GPIO1_IO28}, // Led 2
+		{GPIO1, 10, IOMUXC_GPIO_AD_B0_10_GPIO1_IO10}, // Wifi
+		{GPIO1, 14, IOMUXC_GPIO_AD_B0_14_GPIO1_IO14}, // 5v output 1
+		{GPIO1, 13, IOMUXC_GPIO_AD_B0_13_GPIO1_IO13}, // 5v output 2
+		{GPIO1, 12, IOMUXC_GPIO_AD_B0_12_GPIO1_IO12}, // 5v output 3
+		{GPIO1, 11, IOMUXC_GPIO_AD_B0_11_GPIO1_IO11}, // 5v output 4
 };
 
 unsigned int protectionStateList[256];

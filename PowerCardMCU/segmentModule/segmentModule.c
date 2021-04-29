@@ -6,6 +6,8 @@
  *
  *  This module manage the 8 segments.
  *  It takes the voltage sampling lecture and display it on the 8 segments.
+ *
+ *  This code has not been test.
  */
 
 #include "segmentModule.h"
@@ -49,6 +51,7 @@ typedef struct
  *           D
  */
 
+// This table hold which gpio to set to print the corresponding digit.
 const unsigned char characterTable[10][7] =
 {
 		{ 1, 1, 1, 1, 1, 1, 0 }, // Digit 0
@@ -63,7 +66,9 @@ const unsigned char characterTable[10][7] =
 		{ 1, 1, 1, 1, 0, 1, 1 }, // Digit 9
 };
 
+// This list hold the gpio of the 8 segments for the 8 segments.
 const segmentGpio_t segmentList[7];
+// This list hold the gpio of the 8 segments for the 3 digit.
 const segmentGpio_t digitList[3];
 
 unsigned int digitType[3];
@@ -71,6 +76,7 @@ unsigned int segmentUpdateIdx = 0;
 
 void SegmentModule_Init()
 {
+	// Init all the gpio.
 	for (unsigned int i = 0; i < 9; i++)
 	{
 		const segmentGpio_t *config = &segmentList[i];
@@ -106,6 +112,7 @@ void SegmentModule_Init()
 		GPIO_PinInit(config->gpioPort, config->gpioPin, &gpioConfig);
 	}
 
+	// Init the PIT so the number can be refresh at a certain frequency.
 	// The PIT is init in the sampling module.
 	PIT_SetTimerPeriod(PIT, kPIT_Chnl_1, (24000000 / 9) - 1);
 	PIT_EnableInterrupts(PIT, kPIT_Chnl_1, kPIT_TimerInterruptEnable);
@@ -135,6 +142,10 @@ void PIT_IRQHandler()
 	segmentUpdateIdx = (segmentUpdateIdx + 1) % 3;
 }
 
+/*
+ * This function take a float value and decompose it so the
+ * 3 first digit of the number can be display on the 8 segments.
+ */
 void SegmentModule_UpdateDisplayValue(float val)
 {
 	int tmp = (int) (val * 10);

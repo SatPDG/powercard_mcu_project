@@ -7,8 +7,14 @@
 
 #include "samplingModule.h"
 
+#include "segmentModule.h"
+
 #include "FreeRTOS.h"
 #include "semphr.h"
+
+#define VOLTAGE_GAIN 1
+#define CURRENT_GAIN 1
+#define TEMPERATURE_GAIN 1
 
 unsigned int voltageAccumulate = 0;
 unsigned int currentAccumulate = 0;
@@ -46,11 +52,13 @@ void SamplingModule_Task()
 			temperature = (float) temperatureAccumulate
 					/ (float) nbrTemperatureSample;
 
-			// Compute the real value.
-			voltage *= 1;
-			current *= 1;
-			temperature *= 1;
+			// Compute the real value with the hardware gain.
+			voltage *= VOLTAGE_GAIN;
+			current *= CURRENT_GAIN;
+			temperature *= TEMPERATURE_GAIN;
 			power = voltage * current;
+
+			SegmentModule_UpdateDisplayValue(voltage);
 
 			// Reset the average values.
 			voltageAccumulate = 0;

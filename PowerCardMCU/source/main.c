@@ -3,6 +3,8 @@
  *
  *  Created on: Jan. 9, 2021
  *      Author: Leo Clouet
+ *
+ *  The main of this program is in this file. The OS and the tasks are started here.
  */
 
 #include "directives.h"
@@ -28,6 +30,8 @@
 
 #include "bootModule.h"
 
+#include "segmentModule.h"
+
 #include "watchdogModule.h"
 
 void main() {
@@ -46,7 +50,6 @@ void main() {
 
 	Serial_Init();
 
-#ifndef POWER_CARD_BOARD
 	ADCDriver_Init();
 
 	SamplingModule_Init();
@@ -62,7 +65,10 @@ void main() {
 
 	// Init the protection
 	ProtectionModule_Init();
-#endif
+
+	// Init the 8 segments
+	SegmentModule_Init();
+
 	if (xTaskCreate(LedModule_Task, "LedTask", configMINIMAL_STACK_SIZE + 50, NULL, configMAX_PRIORITIES - 5, NULL) != pdTRUE) {
 		while (1);
 	}
@@ -79,7 +85,6 @@ void main() {
 		while (1);
 	}
 
-#ifndef POWER_CARD_BOARD
 	if (xTaskCreate(SamplingModule_Task, "SamplingTask", configMINIMAL_STACK_SIZE + 100, NULL, configMAX_PRIORITIES - 2, NULL) != pdTRUE) {
 		while (1);
 	}
@@ -98,7 +103,6 @@ void main() {
 
 	// Start the adc chain.
 	ADCDriver_StartSampling();
-#endif
 
 	// Start the OS.
 	vTaskStartScheduler();
